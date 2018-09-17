@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/UwMediaPickerLytGalleryMediaRoot"
+    android:layout_width="match_parent">
+
+    <ImageView
+        android:id="@+id/item_gallery_media_bucket_img_thumbnail"
+        style="@style/UwMediaPickerImgGalleryMediaThumb"
+        android:contentDescription="@string/uwmediapicker_content_description_album_thumbnail" />
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/colorUwMediaPickerBucketBottomStrip"
+        android:padding="@dimen/uwmediapicker_spacing_mini">
+
+        <TextView
+            android:id="@+id/item_gallery_media_bucket_tv_name"
+            style="@style/UwMediaPickerTvGalleryMediaSmallText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/uwmediapicker_spacing_mini"
+            android:ellipsize="end"
+            android:maxLines="2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/item_gallery_media_bucket_tv_media_count"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/item_gallery_media_bucket_tv_media_count"
+            style="@style/UwMediaPickerTvGalleryMediaSmallText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textColor="@color/colorUwMediaPickerAlbumMediaCount"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/item_gallery_media_bucket_tv_name"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </android.support.constraint.ConstraintLayout>
+</FrameLayout>

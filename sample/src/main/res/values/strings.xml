@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">UW Media Picker - Android</string>
+
+    <string name="max_selectable_media_count">Maximum selectable media count</string>
+    <string name="grid_column_count">Grid column count</string>
+    <string name="image_compression">Image compression</string>
+    <string name="compression_max_width">Compression maximum width</string>
+    <string name="compression_max_height">Compression maximum height</string>
+    <string name="compression_quality">Compression quality(%)</string>
+    <string name="image_gallery">Image Gallery</string>
+    <string name="video_gallery">Video Gallery</string>
+    <string name="selected_media_title">Selected Media</string>
+</resources>

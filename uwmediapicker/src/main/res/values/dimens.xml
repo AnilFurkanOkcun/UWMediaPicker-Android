@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Font Sizes-->
+    <dimen name="uwmediapicker_text_size_toolbar_title">17sp</dimen>
+    <dimen name="uwmediapicker_text_size_toolbar_subtext">12sp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="uwmediapicker_spacing_normal">16dp</dimen>
+    <dimen name="uwmediapicker_spacing_small">8dp</dimen>
+    <dimen name="uwmediapicker_spacing_mini">4dp</dimen>
+
+    <!-- Sizes -->
+    <dimen name="uwmediapicker_toolbar_height">48dp</dimen>
+    <dimen name="uwmediapicker_gallery_spacing">2dp</dimen>
+    <dimen name="uwmediapicker_shadow_height">4dp</dimen>
+    <dimen name="uwmediapicker_progressbar_size">42dp</dimen>
+
+</resources>

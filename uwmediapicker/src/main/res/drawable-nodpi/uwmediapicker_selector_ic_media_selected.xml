@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Inactive -->
+    <item android:drawable="@drawable/uwmediapicker_shape_bg_media_unselected" android:state_activated="false" />
+    <!-- Active -->
+    <item android:drawable="@drawable/uwmediapicker_ic_check_circled" android:state_activated="true" />
+
+</selector>

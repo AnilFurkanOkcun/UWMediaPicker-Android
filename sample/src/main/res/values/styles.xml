@@ -1,0 +1,80 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="ViewBaseOption">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">@dimen/option_min_height</item>
+        <item name="android:background">@drawable/shape_bg_option</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:paddingStart">@dimen/spacing_normal</item>
+        <item name="android:paddingEnd">@dimen/spacing_normal</item>
+        <item name="android:paddingTop">@dimen/spacing_small</item>
+        <item name="android:paddingBottom">@dimen/spacing_small</item>
+    </style>
+
+    <style name="LytOption" parent="ViewBaseOption">
+        <item name="android:orientation">horizontal</item>
+    </style>
+
+    <!-- TextView -->
+    <style name="TvOption">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAppearance">@style/textOption</item>
+        <item name="android:layout_marginEnd">@dimen/spacing_normal</item>
+    </style>
+
+    <!-- EditText -->
+    <style name="EditText">
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">28dp</item>
+        <item name="android:background">@drawable/selector_bg_et</item>
+        <item name="android:gravity">center</item>
+        <item name="android:inputType">number</item>
+        <item name="android:textSize">@dimen/font_15</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
+    <!-- Button -->
+    <style name="Button" parent="Base.Widget.AppCompat.Button.Borderless">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:background">@drawable/shape_bg_btn</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">@dimen/spacing_small</item>
+        <item name="android:paddingEnd">@dimen/spacing_small</item>
+        <item name="android:paddingTop">@dimen/spacing_small</item>
+        <item name="android:paddingBottom">@dimen/spacing_small</item>
+        <item name="android:textSize">@dimen/font_15</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <!-- Switch -->
+    <style name="SwitchBlueTheme">
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="android:colorForeground">@color/silverDarken</item>
+    </style>
+
+    <style name="SwitchOption" parent="ViewBaseOption">
+        <item name="android:switchPadding">@dimen/spacing_small</item>
+        <item name="android:theme">@style/SwitchBlueTheme</item>
+        <item name="android:textAppearance">@style/textOption</item>
+        <item name="android:textColor">@color/colorText</item>
+    </style>
+
+    <!-- Text Appearance -->
+    <style name="textOption" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/colorText</item>
+        <item name="android:textSize">@dimen/font_15</item>
+    </style>
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Font Sizes-->
+    <dimen name="font_20">20sp</dimen>
+    <dimen name="font_15">15sp</dimen>
+
+    <!-- Spacing -->
+    <dimen name="spacing_normal">16dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+
+    <!-- Sizes -->
+    <dimen name="toolbar_height">48dp</dimen>
+    <dimen name="option_min_height">48dp</dimen>
+    <dimen name="shadow_height">4dp</dimen>
+</resources>

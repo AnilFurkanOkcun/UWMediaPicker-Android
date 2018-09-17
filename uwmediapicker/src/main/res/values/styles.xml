@@ -1,0 +1,61 @@
+<resources>
+    <!-- Themes -->
+    <style name="UwMediaPickerProgressBarTheme">
+        <item name="colorAccent">@color/colorUwMediaPickerProgressBar</item>
+    </style>
+
+    <!-- Layout Styles -->
+    <style name="UwMediaPickerLytGalleryMediaRoot">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <!-- TextView Styles -->
+    <style name="UwMediaPickerTvGalleryMediaSmallText">
+        <item name="android:textColor">@color/colorUwMediaPickerMediaName</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="UwMediaPickerTvGalleryVideoInfoText" parent="UwMediaPickerTvGalleryMediaSmallText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintVertical_bias">0.97</item>
+    </style>
+
+    <!-- ImageView Styles -->
+    <style name="UwMediaPickerImgGalleryMediaThumb">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="android:contentDescription">
+            @string/uwmediapicker_content_description_image_thumbnail
+        </item>
+    </style>
+
+    <style name="UwMediaPickerImgGalleryMediaSelectedIcon">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="android:background">@drawable/uwmediapicker_selector_ic_media_selected</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintTop_toTopOf">parent</item>
+        <item name="layout_constraintBottom_toBottomOf">parent</item>
+        <item name="layout_constraintHeight_percent">0.13</item>
+        <item name="layout_constraintHorizontal_bias">0.97</item>
+        <item name="layout_constraintVertical_bias">0.03</item>
+        <item name="layout_constraintWidth_percent">0.13</item>
+        <item name="layout_constraintHeight_default">percent</item>
+        <item name="layout_constraintWidth_default">percent</item>
+        <item name="android:contentDescription">
+            @string/uwmediapicker_content_description_selected_icon
+        </item>
+    </style>
+
+</resources>

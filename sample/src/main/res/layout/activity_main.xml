@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_main_lyt_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    android:background="@color/colorPageBackground"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/toolbar_height"
+        android:background="@color/white"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textColor="@color/colorText"
+        android:textSize="@dimen/font_20"
+        android:textStyle="bold" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/toolbar_height">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout style="@style/LytOption">
+
+                <TextView
+                    style="@style/TvOption"
+                    android:text="@string/grid_column_count" />
+
+                <EditText
+                    android:id="@+id/activity_main_et_grid_column_count"
+                    android:text="3"
+                    style="@style/EditText" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/LytOption">
+
+                <TextView
+                    style="@style/TvOption"
+                    android:text="@string/max_selectable_media_count" />
+
+                <EditText
+                    android:id="@+id/activity_main_et_max_selectable_media_count"
+                    style="@style/EditText" />
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/activity_main_switch_image_compression"
+                style="@style/SwitchOption"
+                android:text="@string/image_compression" />
+
+            <LinearLayout style="@style/LytOption">
+
+                <TextView
+                    android:id="@+id/activity_main_tv_max_width"
+                    style="@style/TvOption"
+                    android:textColor="@color/color_text_activatable"
+                    android:text="@string/compression_max_width" />
+
+                <EditText
+                    android:id="@+id/activity_main_et_max_width"
+                    android:textColor="@color/color_text_activatable"
+                    android:text="1280"
+                    style="@style/EditText" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/LytOption">
+
+                <TextView
+                    android:id="@+id/activity_main_tv_max_height"
+                    style="@style/TvOption"
+                    android:textColor="@color/color_text_activatable"
+                    android:text="@string/compression_max_height" />
+
+                <EditText
+                    android:id="@+id/activity_main_et_max_height"
+                    android:textColor="@color/color_text_activatable"
+                    android:text="720"
+                    style="@style/EditText" />
+            </LinearLayout>
+
+            <LinearLayout style="@style/LytOption">
+
+                <TextView
+                    android:id="@+id/activity_main_tv_quality"
+                    style="@style/TvOption"
+                    android:textColor="@color/color_text_activatable"
+                    android:text="@string/compression_quality" />
+
+                <EditText
+                    android:id="@+id/activity_main_et_quality"
+                    style="@style/EditText"
+                    android:text="85"
+                    android:textColor="@color/color_text_activatable"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_normal"
+                android:orientation="horizontal"
+                android:paddingEnd="@dimen/spacing_normal"
+                android:paddingStart="@dimen/spacing_normal">
+
+                <Button
+                    android:id="@+id/activity_main_btn_open_image_gallery"
+                    style="@style/Button"
+                    android:layout_marginEnd="@dimen/spacing_small"
+                    android:layout_weight="1"
+                    android:text="@string/image_gallery" />
+
+                <Button
+                    android:id="@+id/activity_main_btn_open_video_gallery"
+                    style="@style/Button"
+                    android:layout_marginStart="@dimen/spacing_small"
+                    android:layout_weight="1"
+                    android:text="@string/video_gallery" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/activity_main_tv_selected_media_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_normal"
+                android:background="@drawable/shape_bg_tv_title"
+                android:gravity="center"
+                android:padding="@dimen/spacing_small"
+                android:text="@string/selected_media_title"
+                android:textColor="@color/colorText"
+                android:textSize="17sp"
+                android:visibility="gone" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/activity_main_rv_selected_media"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="1dp"/>
+        </LinearLayout>
+    </ScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/shadow_height"
+        android:layout_marginTop="@dimen/toolbar_height"
+        android:background="@drawable/shape_bg_shadow" />
+</FrameLayout>

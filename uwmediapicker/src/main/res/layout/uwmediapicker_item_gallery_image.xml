@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/UwMediaPickerLytGalleryMediaRoot">
+
+    <ImageView
+        android:id="@+id/item_gallery_image_img_thumbnail"
+        style="@style/UwMediaPickerImgGalleryMediaThumb"
+        android:contentDescription="@string/uwmediapicker_content_description_image_thumbnail" />
+
+    <ImageView
+        android:id="@+id/item_gallery_image_img_selected"
+        style="@style/UwMediaPickerImgGalleryMediaSelectedIcon"
+        tools:ignore="ContentDescription" />
+</android.support.constraint.ConstraintLayout>

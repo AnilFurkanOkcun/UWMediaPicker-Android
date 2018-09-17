@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#F6F6F6</color>
+    <color name="colorAccent">#0192d2</color>
+    <color name="colorPageBackground">#F4F5F6</color>
+    <color name="colorImagePlaceHolder">#FCFCFC</color>
+    <color name="white">#FFFFFF</color>
+
+    <color name="colorText">#202020</color>
+    <color name="colorTextInactive">#A6A6A6</color>
+
+    <color name="silverDarken">#A6A6A6</color>
+    <color name="silver">#CDCDCD</color>
+</resources>

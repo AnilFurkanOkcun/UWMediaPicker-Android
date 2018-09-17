@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportHeight="24"
+    android:viewportWidth="24">
+
+    <path
+        android:fillColor="@color/colorUwMediaPickerBackButton"
+        android:pathData="M24,10.6 L24,13.6 L5.8,13.6 L14.1,21.9 L12,24.1 L0,12.1 L12,0.1 L14.2,2.3
+L5.9,10.6 L24,10.6 Z" />
+</vector>

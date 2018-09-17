@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pressed -->
+    <item android:drawable="@drawable/shape_bg_et_active" android:state_focused="true"/>
+    <!-- Default -->
+    <item android:drawable="@drawable/shape_bg_et_default" />
+</selector>
