@@ -11,6 +11,12 @@
     </style>
 
     <!-- TextView Styles -->
+    <style name="UwMediaPickerTvToolbarTitle">
+        <item name="android:textColor">@color/colorUwMediaPickerToolbarTitle</item>
+        <item name="android:textSize">@dimen/uwmediapicker_text_size_toolbar_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
     <style name="UwMediaPickerTvGalleryMediaSmallText">
         <item name="android:textColor">@color/colorUwMediaPickerMediaName</item>
         <item name="android:textSize">10sp</item>

@@ -9,7 +9,7 @@ ext {
     siteUrl = 'https://github.com/AnilFurkanOkcun/UWMediaPicker-Android'
     gitUrl = 'https://github.com/AnilFurkanOkcun/UWMediaPicker-Android.git'
 
-    libraryVersion = '1.0.0'
+    libraryVersion = '1.0.1'
 
     developerId = 'AnilFurkanOkcun'
     developerName = 'Anıl Furkan Ökçün'
@@ -27,7 +27,7 @@ android {
         minSdkVersion 17
         targetSdkVersion 27
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0.1"
         vectorDrawables.useSupportLibrary = true
     }
 
