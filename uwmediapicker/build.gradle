@@ -1,31 +1,29 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 ext {
     libraryName = 'UW Media Picker - Android'
-
     libraryDescription = 'Easy to use and customizable media picker library to pick multiple images(with compression) and videos for Android.'
-
     siteUrl = 'https://github.com/AnilFurkanOkcun/UWMediaPicker-Android'
     gitUrl = 'https://github.com/AnilFurkanOkcun/UWMediaPicker-Android.git'
-
-    libraryVersion = '1.0.1'
+    libraryVersion = '1.0.2'
 
     developerId = 'AnilFurkanOkcun'
     developerName = 'Anıl Furkan Ökçün'
     developerEmail = 'anilfurkanokcun@gmail.com'
 
-    licenseName = 'The MIT License'
+    licenseName = 'The Apache 2.0 License'
     licenseUrl = 'https://github.com/AnilFurkanOkcun/UWMediaPicker-Android/blob/master/LICENSE'
-    allLicenses = ["MIT"]
+    allLicenses = ["Apache 2.0"]
 }
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 17
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0.1"
         vectorDrawables.useSupportLibrary = true
@@ -45,23 +43,17 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
     // Support Libraries
-    implementation "com.android.support:appcompat-v7:$support_lib_version"
-    implementation "com.android.support:design:$support_lib_version"
+    implementation "com.android.support:appcompat-v7:$support_version"
+    implementation "com.android.support:design:$support_version"
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
-    implementation "com.android.support:recyclerview-v7:$support_lib_version"
-    implementation "com.android.support:exifinterface:$support_lib_version"
+    implementation "com.android.support:recyclerview-v7:$support_version"
+    implementation "com.android.support:exifinterface:$support_version"
 
     // Kotlin Coroutine
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:0.21"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:0.19.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_coroutines_version"
 
     // Glide
-    implementation 'com.github.bumptech.glide:glide:4.6.1'
-    kapt 'com.github.bumptech.glide:compiler:4.6.1'
-}
-
-kotlin {
-    experimental {
-        coroutines "enable"
-    }
+    implementation "com.github.bumptech.glide:glide:$glide_version"
+    kapt "com.github.bumptech.glide:compiler:$glide_version"
 }

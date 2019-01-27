@@ -41,11 +41,7 @@ import com.anilokcun.uwmediapicker.model.UWMediaPickerSettingsModel
 import com.anilokcun.uwmediapicker.provider.GalleryMediaDataProvider
 import com.anilokcun.uwmediapicker.ui.GalleryItemDecoration
 import com.anilokcun.uwmediapicker.ui.dialog.ImagePreviewDialog
-import kotlinx.coroutines.experimental.CommonPool
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.android.UI
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.*
 import java.io.File
 
 /**
@@ -142,7 +138,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 		if (settings.lightStatusBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			window.statusBarColor = getColor(R.color.colorUwMediaPickerStatusBar)
 			tvToolbarDone.systemUiVisibility =
-					tvToolbarDone.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+				tvToolbarDone.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 
 		}
 		// Get Device Width in Px
@@ -171,9 +167,9 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 		// Get Data for RecyclerView
 		// Async task started, show progress screen
 		lytProgressBar.visibility = View.VISIBLE
-		launch(UI) {
+		GlobalScope.launch(Dispatchers.Main) {
 			try {
-				val task = async(CommonPool) {
+				val task = async(Dispatchers.IO) {
 					// This is background thread.
 					when (settings.galleryMode) {
 						UwMediaPicker.GalleryMode.ImageGallery -> {
@@ -182,13 +178,13 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 						UwMediaPicker.GalleryMode.VideoGallery -> {
 							galleryMediaProvider.getVideoBuckets()
 						}
+					}.apply {
 					}
 				}
 				mediaBucketsList.addAll(task.await())
 				// This is UI/Main thread
 				recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryMediaBucketClickListener)
 			} catch (e: Exception) {
-				e.toString().logError()
 				Snackbar
 					.make(
 						tvToolbarDone,
@@ -224,8 +220,8 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 			val progressDialog = getProgressDialog().apply { show() }
 			val compressedMediaPathList = arrayListOf<String>()
 			var hasErrorOccurred = false
-			launch(UI) {
-				val task = async(CommonPool) {
+			GlobalScope.launch {
+				val task = async(Dispatchers.IO) {
 					// This is background thread.
 					val imageCompressor = ImageCompressor(
 						settings.compressionMaxWidth,
@@ -293,9 +289,9 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 			mediaList.clear()
 			// Async task started, show progress screen
 			lytProgressBar.visibility = View.VISIBLE
-			launch(UI) {
+			GlobalScope.launch(Dispatchers.Main) {
 				try {
-					taskOpenMediaBucket = async(CommonPool) {
+					taskOpenMediaBucket = async(Dispatchers.IO) {
 						// This is background thread.
 						when (settings.galleryMode) {
 							UwMediaPicker.GalleryMode.ImageGallery -> {
@@ -344,11 +340,10 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 		})
 		// Add OnItemTouchListener to RecyclerView
 		recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
-			override fun onTouchEvent(rv: RecyclerView?, e: MotionEvent?) {}
+			override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
 
-			override fun onInterceptTouchEvent(rv: RecyclerView?, e: MotionEvent?): Boolean {
+			override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
 				// When touch intercept if user quit holding, close ImagePreviewDialog
-				if (e == null) return false
 				if (imagePreviewDialog.isVisible && e.action == MotionEvent.ACTION_UP)
 					imagePreviewDialog.dismiss()
 				return false
@@ -384,20 +379,20 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 			mediaList[position].selected = true
 		}
 		updateSelectedMediaCountTextAndDoneButton()
-		recyclerView.adapter.notifyItemChanged(position)
+		recyclerView.adapter?.notifyItemChanged(position)
 	}
 
 	/** Updates the ToolbarTitle according to opened library type or opened bucket's name */
 	private fun updateToolbarTitle() {
 		tvToolbarTitle.text =
-				if (!isBucketOpened) {
-					when (settings.galleryMode) {
-						UwMediaPicker.GalleryMode.ImageGallery -> getString(R.string.uwmediapicker_toolbar_title_image_library)
-						UwMediaPicker.GalleryMode.VideoGallery -> getString(R.string.uwmediapicker_toolbar_title_video_library)
-					}
-				} else {
-					lastOpenedBucketName
+			if (!isBucketOpened) {
+				when (settings.galleryMode) {
+					UwMediaPicker.GalleryMode.ImageGallery -> getString(R.string.uwmediapicker_toolbar_title_image_library)
+					UwMediaPicker.GalleryMode.VideoGallery -> getString(R.string.uwmediapicker_toolbar_title_video_library)
 				}
+			} else {
+				lastOpenedBucketName
+			}
 	}
 
 	/** Updates the SelectedMediaCount Text, hide it if no media selected
@@ -420,7 +415,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 	}
 
 	@SuppressLint("InflateParams")
-	/** Opens simple progress dialog */
+			/** Opens simple progress dialog */
 	fun getProgressDialog(): AlertDialog {
 		// Inflates the dialog with custom view
 		val dialogView = LayoutInflater.from(this).inflate(R.layout.uwmediapicker_dialog_progress, null)
