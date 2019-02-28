@@ -154,7 +154,7 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 ![UW Media Picker](https://github.com/AnilFurkanOkcun/UWMediaPicker-Android/blob/master/screenshots.jpg?raw=true)
 
 ## Credits
-Thanks to [chimzycash](https://github.com/chimzycash) for the awesome icon.
+Thanks to [Chimzy](https://github.com/chimzycash) for the awesome icon.
 
 
 ## License
