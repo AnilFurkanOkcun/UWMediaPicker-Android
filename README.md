@@ -1,7 +1,7 @@
 ![UW Media Picker](https://github.com/AnilFurkanOkcun/UWMediaPicker-Android/blob/master/sample/src/main/res/mipmap-mdpi/ic_launcher.png?raw=true)
 UW Media Picker-Android
 =======
-[![Release](https://jitpack.io/v/AnilFurkanOkcun/UWMediaPicker-Android.svg)](https://jitpack.io/#AnilFurkanOkcun/UWMediaPicker-Android)
+[![](https://jitpack.io/v/AnilFurkanOkcun/UWMediaPicker-Android.svg)](https://jitpack.io/#AnilFurkanOkcun/UWMediaPicker-Android)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://github.com/AnilFurkanOkcun/UWMediaPicker-Android/blob/master/LICENSE)
 
 Easy to use and customizable media picker library to pick multiple images(with compression) and videos for Android.
@@ -43,7 +43,7 @@ Add the dependency to your app level build.gradle:
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.0.2'
+	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.1.0'
 }
 ```
 **2. Add `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permission to manifest**
