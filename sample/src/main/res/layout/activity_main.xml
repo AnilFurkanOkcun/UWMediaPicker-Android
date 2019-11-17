@@ -139,7 +139,7 @@
                 android:textSize="17sp"
                 android:visibility="gone" />
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/activity_main_rv_selected_media"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

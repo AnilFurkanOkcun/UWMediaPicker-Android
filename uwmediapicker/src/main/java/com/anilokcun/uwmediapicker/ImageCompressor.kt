@@ -1,7 +1,7 @@
 package com.anilokcun.uwmediapicker
 
 import android.graphics.*
-import android.support.media.ExifInterface
+import androidx.exifinterface.media.ExifInterface
 import com.anilokcun.uwmediapicker.helper.logError
 import java.io.File
 import java.io.FileOutputStream
@@ -29,7 +29,7 @@ internal class ImageCompressor(private val maxWidth: Float, private val maxHeigh
 		}
 		var fileOutputStream: FileOutputStream? = null
 		val destinationParentFile = File(compressedFilePath).parentFile
-		if (!destinationParentFile.exists()) {
+        if (destinationParentFile?.exists() == false) {
 			destinationParentFile.mkdirs()
 		}
 		try {
@@ -109,7 +109,7 @@ internal class ImageCompressor(private val maxWidth: Float, private val maxHeigh
 		scaleMatrix.setScale(ratioX, ratioY, middleX, middleY)
 
 		val canvas = Canvas(scaledBitmap!!)
-		canvas.matrix = scaleMatrix
+        canvas.setMatrix(scaleMatrix)
 		canvas.drawBitmap(bitmap!!, middleX - bitmap.width / 2,
 			middleY - bitmap.height / 2, Paint(Paint.FILTER_BITMAP_FLAG))
 		bitmap.recycle()

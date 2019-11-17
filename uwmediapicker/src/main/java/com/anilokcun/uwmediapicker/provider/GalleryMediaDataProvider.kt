@@ -33,7 +33,7 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 			null, null, MediaStore.Images.Media.DATE_ADDED)
 		val bucketsList = arrayListOf<GalleryMediaBucketModel>()
 		val bucketsIdList = HashSet<String>()
-		if (cursor.moveToLast()) {
+		if (cursor?.moveToLast() == true) {
 			do {
 				if (Thread.interrupted()) {
 					return arrayListOf()
@@ -50,7 +50,7 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 				bucketsList.add(GalleryMediaBucketModel(bucketId, bucketName, bucketPath, bucketMediaCount))
 			} while (cursor.moveToPrevious())
 		}
-		cursor.close()
+		cursor?.close()
 		return bucketsList
 	}
 
@@ -62,7 +62,7 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 			null, null, MediaStore.Video.Media.DATE_ADDED)
 		val bucketsList = arrayListOf<GalleryMediaBucketModel>()
 		val bucketsIdList = HashSet<String>()
-		if (cursor.moveToLast()) {
+		if (cursor?.moveToLast() == true) {
 			do {
 				if (Thread.interrupted()) {
 					return arrayListOf()
@@ -79,7 +79,7 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 				bucketsList.add(GalleryMediaBucketModel(bucketId, bucketName, bucketThumbnailBitmapPath, bucketMediaCount))
 			} while (cursor.moveToPrevious())
 		}
-		cursor.close()
+		cursor?.close()
 		return bucketsList
 	}
 
@@ -93,7 +93,7 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 			"$projectionImageBucketId =?", arrayOf(bucketId), MediaStore.Images.Media.DATE_ADDED)
 		val imagesList = arrayListOf<GalleryImageModel>()
 		val imagesPathsList = HashSet<String>()
-		if (cursor.moveToLast()) {
+		if (cursor?.moveToLast() == true) {
 			do {
 				if (Thread.interrupted()) {
 					return arrayListOf()
@@ -108,7 +108,7 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 				imagesPathsList.add(imagePath)
 			} while (cursor.moveToPrevious())
 		}
-		cursor.close()
+		cursor?.close()
 		return imagesList
 	}
 
@@ -122,7 +122,7 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 			"$projectionVideoBucketId =?", arrayOf(bucketId), MediaStore.Video.Media.DATE_ADDED)
 		val videosList = arrayListOf<GalleryVideoModel>()
 		val videosPathsList = HashSet<String>()
-		if (cursor.moveToLast()) {
+		if (cursor?.moveToLast() == true) {
 			do {
 				if (Thread.interrupted()) {
 					return arrayListOf()
@@ -141,7 +141,7 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 				videosPathsList.add(videoPath)
 			} while (cursor.moveToPrevious())
 		}
-		cursor.close()
+		cursor?.close()
 		return videosList
 	}
 
@@ -151,10 +151,10 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 			val cursor = context.contentResolver.query(
 				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, null,
 				"$projectionImageBucketId =?", arrayOf(bucketId), MediaStore.Images.Media.DATE_ADDED)
-			if (cursor.count > 0) {
+			if (cursor?.count != null && cursor.count > 0) {
 				return cursor.count
 			}
-			cursor.close()
+			cursor?.close()
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}
@@ -167,10 +167,10 @@ internal class GalleryMediaDataProvider(private val context: Context) {
 			val cursor = context.contentResolver.query(
 				MediaStore.Video.Media.EXTERNAL_CONTENT_URI, null,
 				"$projectionVideoBucketId =?", arrayOf(bucketId), MediaStore.Video.Media.DATE_ADDED)
-			if (cursor.count > 0) {
+			if (cursor?.count != null && cursor.count > 0) {
 				return cursor.count
 			}
-			cursor.close()
+			cursor?.close()
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}

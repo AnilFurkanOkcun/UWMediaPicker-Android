@@ -4,8 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Environment
-import android.support.v4.app.Fragment
-import com.anilokcun.uwmediapicker.enum.Enums
+import com.anilokcun.uwmediapicker.constants.Constants
 import com.anilokcun.uwmediapicker.model.UWMediaPickerSettingsModel
 import com.anilokcun.uwmediapicker.ui.activity.UwMediaPickerActivity
 import java.lang.ref.WeakReference
@@ -19,7 +18,7 @@ import java.lang.ref.WeakReference
 class UwMediaPicker private constructor() {
 
 	private var activityWeakReference: WeakReference<Activity>? = null
-	private var fragmentWeakReference: WeakReference<Fragment>? = null
+	private var fragmentWeakReference: WeakReference<androidx.fragment.app.Fragment>? = null
 
 	private var requestCode: Int = 0
 
@@ -125,11 +124,11 @@ class UwMediaPicker private constructor() {
 		)
 		if (activityWeakReference != null) {
 			val uwMediaPickerIntent = Intent(activityWeakReference?.get(), UwMediaPickerActivity::class.java)
-			uwMediaPickerIntent.putExtra(Enums.UWMediaPickerSettingsKey.toString(), uwMediaPickerSettings)
+			uwMediaPickerIntent.putExtra(Constants.UWMEDIA_PICKER_SETTINGS_KEY, uwMediaPickerSettings)
 			activityWeakReference?.get()?.startActivityForResult(uwMediaPickerIntent, requestCode)
 		} else if (fragmentWeakReference != null) {
 			val uwMediaPickerIntent = Intent(fragmentWeakReference?.get()?.context, UwMediaPickerActivity::class.java)
-			uwMediaPickerIntent.putExtra(Enums.UWMediaPickerSettingsKey.toString(), uwMediaPickerSettings)
+			uwMediaPickerIntent.putExtra(Constants.UWMEDIA_PICKER_SETTINGS_KEY, uwMediaPickerSettings)
 			fragmentWeakReference?.get()?.startActivityForResult(uwMediaPickerIntent, requestCode)
 		}
 	}
@@ -142,7 +141,7 @@ class UwMediaPicker private constructor() {
 		fun with(activity: Activity) =
 			UwMediaPicker().apply { this.activityWeakReference = WeakReference(activity) }
 
-		fun with(fragment: Fragment) =
+		fun with(fragment: androidx.fragment.app.Fragment) =
 			UwMediaPicker().apply { this.fragmentWeakReference = WeakReference(fragment) }
 	}
 }

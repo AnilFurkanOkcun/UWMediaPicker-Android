@@ -1,11 +1,11 @@
 package com.anilokcun.uwmediapicker.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.anilokcun.uwmediapicker.R
-import com.anilokcun.uwmediapicker.enum.Enums
+import com.anilokcun.uwmediapicker.constants.Constants
 import com.anilokcun.uwmediapicker.listener.GalleryMediaOnLongClickListener
 import com.anilokcun.uwmediapicker.listener.OnRVItemClickListener
 import com.anilokcun.uwmediapicker.model.BaseGalleryModel
@@ -47,7 +47,7 @@ internal class GalleryMediaRvAdapter(
 			BaseGalleryModel.TYPE_GALLERY_IMAGE -> GalleryImageVH(LayoutInflater.from(context)
 				.inflate(R.layout.uwmediapicker_item_gallery_image, parent, false))
 			// Error;
-			else -> throw RuntimeException(Enums.MissingViewTypeException.toString() + " ViewType: " + viewType)
+			else -> throw IllegalArgumentException("${Constants.MISSING_VIEW_TYPE_EXCEPTION} ViewType: $viewType")
 		}
 	}
 
@@ -61,7 +61,7 @@ internal class GalleryMediaRvAdapter(
 			// Gallery Image;
 			BaseGalleryModel.TYPE_GALLERY_IMAGE -> (holder as GalleryImageVH).bind(itemList[position] as GalleryImageModel, onRVItemClickListener, galleryMediaOnLongClickListener)
 			// Error;
-			else -> throw RuntimeException(Enums.MissingViewTypeException.toString() + " ViewType: " + itemList[position].itemType)
+			else -> throw RuntimeException("${Constants.MISSING_VIEW_TYPE_EXCEPTION} ViewType: ${itemList[position].itemType}")
 		}
 	}
 

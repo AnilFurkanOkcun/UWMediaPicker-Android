@@ -7,13 +7,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.Snackbar
-import android.support.v7.app.AlertDialog
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.app.AppCompatDelegate
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -25,11 +18,17 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.anilokcun.uwmediapicker.ImageCompressor
 import com.anilokcun.uwmediapicker.R
 import com.anilokcun.uwmediapicker.UwMediaPicker
 import com.anilokcun.uwmediapicker.adapter.GalleryMediaRvAdapter
-import com.anilokcun.uwmediapicker.enum.Enums
+import com.anilokcun.uwmediapicker.constants.Constants
 import com.anilokcun.uwmediapicker.helper.logError
 import com.anilokcun.uwmediapicker.helper.toUri
 import com.anilokcun.uwmediapicker.helper.toastStringRes
@@ -41,6 +40,7 @@ import com.anilokcun.uwmediapicker.model.UWMediaPickerSettingsModel
 import com.anilokcun.uwmediapicker.provider.GalleryMediaDataProvider
 import com.anilokcun.uwmediapicker.ui.GalleryItemDecoration
 import com.anilokcun.uwmediapicker.ui.dialog.ImagePreviewDialog
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import java.io.File
 
@@ -133,7 +133,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 	/** Does initial actions */
 	private fun initPage() {
 		// Get Settings
-		settings = intent.extras.getParcelable(Enums.UWMediaPickerSettingsKey.toString())
+		settings = intent?.extras?.getParcelable(Constants.UWMEDIA_PICKER_SETTINGS_KEY)!!
 		// Set Status bar icon colors
 		if (settings.lightStatusBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			window.statusBarColor = getColor(R.color.colorUwMediaPickerStatusBar)
@@ -157,7 +157,8 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 		updateToolbarTitle()
 
 		// Set RecyclerView
-		recyclerView.layoutManager = GridLayoutManager(applicationContext, settings.gridColumnCount)
+		recyclerView.layoutManager =
+				GridLayoutManager(applicationContext, settings.gridColumnCount)
 		recyclerView.itemAnimator = DefaultItemAnimator()
 		recyclerView.addItemDecoration(GalleryItemDecoration(
 			resources.getDimensionPixelSize(R.dimen.uwmediapicker_gallery_spacing),
@@ -424,7 +425,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 			.setView(dialogView)
 			.setCancelable(false)
 			.create().apply {
-				window.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+					window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 			}
 	}
 

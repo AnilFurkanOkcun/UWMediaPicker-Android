@@ -1,10 +1,10 @@
 package com.anilokcun.uwmediapicker.viewholder
 
 import android.graphics.drawable.ColorDrawable
-import android.support.v4.content.ContextCompat
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
 import com.anilokcun.uwmediapicker.R
 import com.anilokcun.uwmediapicker.helper.toUri
 import com.anilokcun.uwmediapicker.listener.OnRVItemClickListener

@@ -10,6 +10,8 @@ import com.anilokcun.uwmediapicker.model.GalleryVideoModel
 import com.anilokcun.uwmediapicker.ui.activity.UwMediaPickerActivity
 import java.text.DecimalFormat
 import java.util.concurrent.TimeUnit
+import kotlin.math.log10
+import kotlin.math.pow
 
 /**
  * Author     	:	Anıl Furkan Ökçün
@@ -59,9 +61,9 @@ internal class GalleryVideoVH(itemView: View) : BaseGalleryMediaVH(itemView) {
 				"0"
 			} else {
 				val units = arrayListOf("B", "KB", "MB", "GB", "TB")
-				val digitGroups = (Math.log10(item.videoSize.toDouble()) / Math.log10(1024.0)).toInt()
+				val digitGroups = (log10(item.videoSize.toDouble()) / log10(1024.0)).toInt()
 				TextUtils.concat(DecimalFormat("#,##0.#").format(item.videoSize.toDouble()
-						/ (Math.pow(1024.0, digitGroups.toDouble()))), " ", units[digitGroups])
+						/ (1024.0.pow(digitGroups.toDouble()))), " ", units[digitGroups])
 			}
 		} else ""
 	}

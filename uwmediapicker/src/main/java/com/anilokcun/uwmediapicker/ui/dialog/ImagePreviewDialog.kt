@@ -4,14 +4,13 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
-import android.support.v4.app.FragmentManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.fragment.app.FragmentManager
 import com.bumptech.glide.Glide
 
 /**
@@ -20,7 +19,7 @@ import com.bumptech.glide.Glide
  * Create Date	:	30.08.2018
  */
 
-internal class ImagePreviewDialog : DialogFragment() {
+internal class ImagePreviewDialog : androidx.fragment.app.DialogFragment() {
 
 	private var imageUri: Uri? = null
 
@@ -33,11 +32,15 @@ internal class ImagePreviewDialog : DialogFragment() {
 		val imgRootView = ImageView(inflater.context)
 
 		val root = FrameLayout(context!!)
-		root.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-		dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-		dialog.setContentView(root)
-		dialog.window.setBackgroundDrawable(ColorDrawable(Color.BLACK))
-		dialog.window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+		root.layoutParams =
+				ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+		dialog?.apply {
+			requestWindowFeature(Window.FEATURE_NO_TITLE)
+			setContentView(root)
+			window?.setBackgroundDrawable(ColorDrawable(Color.BLACK))
+			window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+		}
+
 
 		Glide.with(this)
 			.load(imageUri)
@@ -47,6 +50,7 @@ internal class ImagePreviewDialog : DialogFragment() {
 	}
 
 	internal fun showPreview(manager: FragmentManager?, imageUri: Uri?) {
+		if (manager == null) return
 		super.show(manager, "ImagePreviewDialogTag")
 		this.imageUri = imageUri
 	}
