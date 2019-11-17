@@ -1,3 +1,4 @@
+![UW Media Picker](https://github.com/AnilFurkanOkcun/UWMediaPicker-Android/blob/master/sample/src/main/res/mipmap-mdpi/ic_launcher.png?raw=true)
 UW Media Picker-Android
 =======
 [![Release](https://jitpack.io/v/AnilFurkanOkcun/UWMediaPicker-Android.svg)](https://jitpack.io/#AnilFurkanOkcun/UWMediaPicker-Android)
@@ -151,6 +152,11 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 
 ## Screenshots
 ![UW Media Picker](https://github.com/AnilFurkanOkcun/UWMediaPicker-Android/blob/master/screenshots.jpg?raw=true)
+
+## Credits
+Thanks to [Chimzy](https://github.com/chimzycash) for the awesome icon.
+
+
 ## License
 ```
 Copyright (c) 2018 Anıl Furkan Ökçün
@@ -167,3 +173,4 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 ```
+
