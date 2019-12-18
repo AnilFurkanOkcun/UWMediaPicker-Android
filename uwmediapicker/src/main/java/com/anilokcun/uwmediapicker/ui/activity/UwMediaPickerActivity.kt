@@ -133,7 +133,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 	/** Does initial actions */
 	private fun initPage() {
 		// Get Settings
-		settings = intent?.extras?.getParcelable(Constants.UWMEDIA_PICKER_SETTINGS_KEY)!!
+        settings = intent?.extras?.getParcelable(Constants.UW_MEDIA_PICKER_SETTINGS_KEY)!!
 		// Set Status bar icon colors
 		if (settings.lightStatusBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			window.statusBarColor = getColor(R.color.colorUwMediaPickerStatusBar)

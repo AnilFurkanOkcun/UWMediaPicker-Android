@@ -9,6 +9,6 @@ package com.anilokcun.uwmediapicker.constants
 internal object Constants {
 
     const val MISSING_VIEW_TYPE_EXCEPTION = "UW Media Picker: Missing view type exception"
-    const val UWMEDIA_PICKER_SETTINGS_KEY = "UWMediaPickerSettingsKey"
+    const val UW_MEDIA_PICKER_SETTINGS_KEY = "UWMediaPickerSettingsKey"
 
 }

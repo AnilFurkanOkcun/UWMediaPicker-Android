@@ -124,11 +124,11 @@ class UwMediaPicker private constructor() {
 		)
 		if (activityWeakReference != null) {
 			val uwMediaPickerIntent = Intent(activityWeakReference?.get(), UwMediaPickerActivity::class.java)
-			uwMediaPickerIntent.putExtra(Constants.UWMEDIA_PICKER_SETTINGS_KEY, uwMediaPickerSettings)
+			uwMediaPickerIntent.putExtra(Constants.UW_MEDIA_PICKER_SETTINGS_KEY, uwMediaPickerSettings)
 			activityWeakReference?.get()?.startActivityForResult(uwMediaPickerIntent, requestCode)
 		} else if (fragmentWeakReference != null) {
 			val uwMediaPickerIntent = Intent(fragmentWeakReference?.get()?.context, UwMediaPickerActivity::class.java)
-			uwMediaPickerIntent.putExtra(Constants.UWMEDIA_PICKER_SETTINGS_KEY, uwMediaPickerSettings)
+			uwMediaPickerIntent.putExtra(Constants.UW_MEDIA_PICKER_SETTINGS_KEY, uwMediaPickerSettings)
 			fragmentWeakReference?.get()?.startActivityForResult(uwMediaPickerIntent, requestCode)
 		}
 	}
