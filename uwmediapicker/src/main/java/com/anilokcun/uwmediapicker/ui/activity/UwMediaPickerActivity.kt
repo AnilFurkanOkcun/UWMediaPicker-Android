@@ -43,6 +43,7 @@ import com.anilokcun.uwmediapicker.ui.dialog.ImagePreviewDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import java.io.File
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Author     	:	Anıl Furkan Ökçün
@@ -50,7 +51,11 @@ import java.io.File
  * Create Date	:	30.08.2018
  */
 
-internal class UwMediaPickerActivity : AppCompatActivity() {
+internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
+
+	override val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
+
+	private lateinit var job: Job
 
 	private val galleryMediaProvider by lazy { GalleryMediaDataProvider(this) }
 
@@ -107,9 +112,15 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
+		job = Job()
 		setContentView(R.layout.activity_uw_media_picker)
 		initPage()
 		addListeners()
+	}
+
+	override fun onDestroy() {
+		job.cancel()
+		super.onDestroy()
 	}
 
 	override fun onBackPressed() {
@@ -133,7 +144,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 	/** Does initial actions */
 	private fun initPage() {
 		// Get Settings
-        settings = intent?.extras?.getParcelable(Constants.UW_MEDIA_PICKER_SETTINGS_KEY)!!
+		settings = intent?.extras?.getParcelable(Constants.UW_MEDIA_PICKER_SETTINGS_KEY)!!
 		// Set Status bar icon colors
 		if (settings.lightStatusBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			window.statusBarColor = getColor(R.color.colorUwMediaPickerStatusBar)
@@ -158,7 +169,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 
 		// Set RecyclerView
 		recyclerView.layoutManager =
-				GridLayoutManager(applicationContext, settings.gridColumnCount)
+			GridLayoutManager(applicationContext, settings.gridColumnCount)
 		recyclerView.itemAnimator = DefaultItemAnimator()
 		recyclerView.addItemDecoration(GalleryItemDecoration(
 			resources.getDimensionPixelSize(R.dimen.uwmediapicker_gallery_spacing),
@@ -168,7 +179,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 		// Get Data for RecyclerView
 		// Async task started, show progress screen
 		lytProgressBar.visibility = View.VISIBLE
-		GlobalScope.launch(Dispatchers.Main) {
+		launch {
 			try {
 				val task = async(Dispatchers.IO) {
 					// This is background thread.
@@ -221,7 +232,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 			val progressDialog = getProgressDialog().apply { show() }
 			val compressedMediaPathList = arrayListOf<String>()
 			var hasErrorOccurred = false
-			GlobalScope.launch {
+			launch {
 				val task = async(Dispatchers.IO) {
 					// This is background thread.
 					val imageCompressor = ImageCompressor(
@@ -290,7 +301,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 			mediaList.clear()
 			// Async task started, show progress screen
 			lytProgressBar.visibility = View.VISIBLE
-			GlobalScope.launch(Dispatchers.Main) {
+			launch {
 				try {
 					taskOpenMediaBucket = async(Dispatchers.IO) {
 						// This is background thread.
@@ -331,7 +342,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 
 	/** Sets Media Buckets(Albums) Recycler View */
 	private fun setMediaBucketRecyclerView() {
-		// Set recyclerview with mediaList, GalleryMediaClickListener and OnLongClickListener
+		// Set recyclerView with mediaList, GalleryMediaClickListener and OnLongClickListener
 		recyclerView.adapter = GalleryMediaRvAdapter(mediaList, galleryMediaClickListener, object : GalleryMediaOnLongClickListener {
 			// Open ImagePreviewDialog when long clicked to image
 			override fun onLongClick(imagePath: String?) {
@@ -416,8 +427,8 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 	}
 
 	@SuppressLint("InflateParams")
-			/** Opens simple progress dialog */
-	fun getProgressDialog(): AlertDialog {
+	/** Opens simple progress dialog */
+	private fun getProgressDialog(): AlertDialog {
 		// Inflates the dialog with custom view
 		val dialogView = LayoutInflater.from(this).inflate(R.layout.uwmediapicker_dialog_progress, null)
 
@@ -425,7 +436,7 @@ internal class UwMediaPickerActivity : AppCompatActivity() {
 			.setView(dialogView)
 			.setCancelable(false)
 			.create().apply {
-					window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+				window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 			}
 	}
 
