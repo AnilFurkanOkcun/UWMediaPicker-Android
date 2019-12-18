@@ -1,1 +1,14 @@
-<manifest package="com.anilokcun.uwmediapicker" />
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.anilokcun.uwmediapicker">
+    
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /><!--For compression to file function-->
+    
+    <application>
+        <activity
+            android:name="com.anilokcun.uwmediapicker.ui.activity.UwMediaPickerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+    </application>
+
+</manifest>

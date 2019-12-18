@@ -4,7 +4,7 @@ buildscript {
         projectConfig = [
                 application_id: 'com.anilokcun.matchcards',
                 version_code  : 1,
-                version_name  : '1.1.1',
+                version_name  : '1.1.2',
                 compile_sdk   : 29,
                 min_sdk       : 18,
                 target_sdk    : 29
