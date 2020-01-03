@@ -14,7 +14,7 @@ Easy to use and customizable media picker library to pick multiple images(with c
 
 ## Supported Features
 
-* Multiple image or video selecting
+* Multiple image and/or video selecting
 * Image compression
 * Image preview by press and holding the image
 * Async album loading with Kotlin Coroutine
@@ -68,7 +68,7 @@ dependencies {
  UwMediaPicker
 	.with(this)						// Activity or Fragment
  	.setRequestCode(REQUEST_CODE)				// Give request code, default is 0
-    	.setGalleryMode(UwMediaPicker.GalleryMode.ImageGallery) // GalleryMode: ImageGallery or VideoGallery, default is ImageGallery
+    	.setGalleryMode(UwMediaPicker.GalleryMode.ImageGallery) // GalleryMode: ImageGallery/VideoGallery/ImageAndVideoGallery, default is ImageGallery
  	.setGridColumnCount(4)                                  // Grid column count, default is 3
     	.setMaxSelectableMediaCount(10)                         // Maximum selectable media count, default is null which means infinite
     	.setLightStatusBar(true)                                // Is llight status bar enable, default is true
@@ -86,7 +86,8 @@ dependencies {
 override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 	super.onActivityResult(requestCode, resultCode, data)
 	if (data != null && resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
-		selectedMediaPaths = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerResultKey)
+		val selectedImagesPathsList = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerImagesArrayKey)
+		val selectedVideosPathsList = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerVideosArrayKey)
 	}
 }
 ```
@@ -125,6 +126,7 @@ override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) 
 <!-- Toolbar Texts -->
 <string name="uwmediapicker_toolbar_title_image_library">Image Library</string>
 <string name="uwmediapicker_toolbar_title_video_library">Video Library</string>
+<string name="uwmediapicker_toolbar_title_image_and_video_library">Image&amp;Video Library</string>
 <string name="uwmediapicker_toolbar_text_uw_media_picker_selected_media_count">%d/%d selected</string>
 <string name="uwmediapicker_toolbar_done">Done</string>
 

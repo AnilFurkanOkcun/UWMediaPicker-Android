@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Environment
+import androidx.fragment.app.Fragment
 import com.anilokcun.uwmediapicker.constants.Constants
 import com.anilokcun.uwmediapicker.model.UWMediaPickerSettingsModel
 import com.anilokcun.uwmediapicker.ui.activity.UwMediaPickerActivity
@@ -18,7 +19,7 @@ import java.lang.ref.WeakReference
 class UwMediaPicker private constructor() {
 
 	private var activityWeakReference: WeakReference<Activity>? = null
-	private var fragmentWeakReference: WeakReference<androidx.fragment.app.Fragment>? = null
+	private var fragmentWeakReference: WeakReference<Fragment>? = null
 
 	private var requestCode: Int = 0
 
@@ -48,16 +49,16 @@ class UwMediaPicker private constructor() {
 
 	fun setMaxSelectableMediaCount(maxSelectableMediaCount: Int?): UwMediaPicker {
 		this.maxSelectableMediaCount =
-				if (maxSelectableMediaCount != null && maxSelectableMediaCount >= 1) {
-					maxSelectableMediaCount
-				} else null
+			if (maxSelectableMediaCount != null && maxSelectableMediaCount >= 1) {
+				maxSelectableMediaCount
+			} else null
 		return this
 	}
 
 	fun setGridColumnCount(gridColumnCount: Int): UwMediaPicker {
 		this.gridColumnCount =
-				if (gridColumnCount >= 1) gridColumnCount
-				else 1
+			if (gridColumnCount >= 1) gridColumnCount
+			else 1
 		return this
 	}
 
@@ -73,19 +74,19 @@ class UwMediaPicker private constructor() {
 
 	fun setCompressionMaxWidth(maxWidth: Float): UwMediaPicker {
 		this.compressionMaxHeight =
-				if (maxWidth < 1)
-					1F
-				else
-					maxWidth
+			if (maxWidth < 1)
+				1F
+			else
+				maxWidth
 		return this
 	}
 
 	fun setCompressionMaxHeight(maxHeight: Float): UwMediaPicker {
 		this.compressionMaxHeight =
-				if (maxHeight < 1)
-					1F
-				else
-					maxHeight
+			if (maxHeight < 1)
+				1F
+			else
+				maxHeight
 		return this
 	}
 
@@ -96,11 +97,11 @@ class UwMediaPicker private constructor() {
 
 	fun setCompressionQuality(quality: Int): UwMediaPicker {
 		this.compressionQuality =
-				when {
-					quality < 0 -> 0
-					quality > 100 -> 100
-					else -> quality
-				}
+			when {
+				quality < 0 -> 0
+				quality > 100 -> 100
+				else -> quality
+			}
 		return this
 	}
 
@@ -133,15 +134,16 @@ class UwMediaPicker private constructor() {
 		}
 	}
 
-	enum class GalleryMode { ImageGallery, VideoGallery }
+	enum class GalleryMode { ImageGallery, VideoGallery, ImageAndVideoGallery }
 
 	companion object {
-		const val UwMediaPickerResultKey = "UwMediaPickerResultKey"
+		const val UwMediaPickerImagesArrayKey = "UwMediaPickerImagesArrayKey"
+		const val UwMediaPickerVideosArrayKey = "UwMediaPickerVideosArrayKey"
 
 		fun with(activity: Activity) =
 			UwMediaPicker().apply { this.activityWeakReference = WeakReference(activity) }
 
-		fun with(fragment: androidx.fragment.app.Fragment) =
+		fun with(fragment: Fragment) =
 			UwMediaPicker().apply { this.fragmentWeakReference = WeakReference(fragment) }
 	}
 }

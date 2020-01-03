@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Active -->
-    <item android:color="@color/colorUwMediaPickerDoneActive" android:state_activated="true" />
-    <!-- Inactive-->
-    <item android:color="@color/colorUwMediaPickerDoneInactive" android:state_activated="false" />
-</selector>

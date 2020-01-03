@@ -9,17 +9,16 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
-import android.widget.*
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.anilokcun.uwmediapicker.UwMediaPicker
+import kotlinx.android.synthetic.main.activity_main.*
 
 /**
  * Author   	:	Anıl Furkan Ökçün
@@ -29,24 +28,7 @@ import com.anilokcun.uwmediapicker.UwMediaPicker
 
 class MainActivity : AppCompatActivity() {
 
-	private val lytRoot by lazy { findViewById<FrameLayout>(R.id.activity_main_lyt_root) }
-	private val etMaxSelectableMediaCount by lazy { findViewById<EditText>(R.id.activity_main_et_max_selectable_media_count) }
-	private val etGridColumnCount by lazy { findViewById<EditText>(R.id.activity_main_et_grid_column_count) }
-	private val switchImageCompression by lazy { findViewById<Switch>(R.id.activity_main_switch_image_compression) }
-	private val tvMaxWidth by lazy { findViewById<TextView>(R.id.activity_main_tv_max_width) }
-	private val etMaxWidth by lazy { findViewById<EditText>(R.id.activity_main_et_max_width) }
-	private val tvMaxHeight by lazy { findViewById<TextView>(R.id.activity_main_tv_max_height) }
-	private val etMaxHeight by lazy { findViewById<EditText>(R.id.activity_main_et_max_height) }
-	private val tvQuality by lazy { findViewById<TextView>(R.id.activity_main_tv_quality) }
-	private val etQuality by lazy { findViewById<EditText>(R.id.activity_main_et_quality) }
-	private val btnOpenImageGallery by lazy { findViewById<TextView>(R.id.activity_main_btn_open_image_gallery) }
-	private val btnOpenVideoGallery by lazy { findViewById<TextView>(R.id.activity_main_btn_open_video_gallery) }
-	private val tvSelectedMediaTitle by lazy { findViewById<TextView>(R.id.activity_main_tv_selected_media_title) }
-	private val rvSelectedMedia by lazy { findViewById<RecyclerView>(R.id.activity_main_rv_selected_media) }
-
-
 	private val selectedMediaGridColumnCount = 5
-
 	private val selectedMediaPaths by lazy { arrayListOf<String>() }
 
 	override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 		setContentView(R.layout.activity_main)
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			lytRoot.systemUiVisibility =
-					lytRoot.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+				lytRoot.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 		}
 		// Get Device Width in Px
 		val displayMetrics = DisplayMetrics()
@@ -70,18 +52,18 @@ class MainActivity : AppCompatActivity() {
 		etQuality.isEnabled = false
 		// Set RecyclerView
 		rvSelectedMedia.layoutManager =
-				GridLayoutManager(applicationContext, selectedMediaGridColumnCount)
+			GridLayoutManager(applicationContext, selectedMediaGridColumnCount)
 		rvSelectedMedia.itemAnimator = DefaultItemAnimator()
 		rvSelectedMedia.addItemDecoration(GalleryItemDecoration(
 			resources.getDimensionPixelSize(com.anilokcun.uwmediapicker.R.dimen.uwmediapicker_gallery_spacing),
 			selectedMediaGridColumnCount
 		))
 		rvSelectedMedia.adapter = SelectedMediaRvAdapter(selectedMediaPaths)
-		addListeners()
+		setListeners()
 	}
 
 	override fun onRequestPermissionsResult(requestCode: Int,
-											permissions: Array<String>, grantResults: IntArray) {
+	                                        permissions: Array<String>, grantResults: IntArray) {
 		when (requestCode) {
 			REQUEST_CODE_PICK_IMAGE, REQUEST_CODE_PICK_VIDEO -> {
 				handleMediaPickRequest(grantResults, requestCode, ::openUwImagePicker)
@@ -93,26 +75,19 @@ class MainActivity : AppCompatActivity() {
 		super.onActivityResult(requestCode, resultCode, data)
 		if (data == null || resultCode != Activity.RESULT_OK) return
 		when (requestCode) {
-			REQUEST_CODE_PICK_IMAGE, REQUEST_CODE_PICK_VIDEO -> {
-				try {
-					selectedMediaPaths.addAll(data.getStringArrayExtra(UwMediaPicker.UwMediaPickerResultKey))
-					if (selectedMediaPaths.isNotEmpty()) {
-						(rvSelectedMedia.adapter as SelectedMediaRvAdapter).update(selectedMediaPaths)
-						tvSelectedMediaTitle.visibility = View.VISIBLE
-					} else {
-						// Error with Image Selecting
-						Log.e("UwMediaPicker", "Error")
-					}
-				} catch (e: Exception) {
-					// Error with Image Selecting
-					Log.e("UwMediaPicker", e.message)
-				}
+			REQUEST_CODE_PICK_IMAGE, REQUEST_CODE_PICK_VIDEO, REQUEST_CODE_PICK_IMAGE_AND_VIDEO -> {
+				val selectedImagesPathsList = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerImagesArrayKey)
+				val selectedVideosPathsList = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerVideosArrayKey)
+				selectedImagesPathsList?.let { selectedMediaPaths.addAll(it) }
+				selectedVideosPathsList?.let { selectedMediaPaths.addAll(it) }
+				(rvSelectedMedia.adapter as SelectedMediaRvAdapter).update(selectedMediaPaths)
+				tvSelectedMediaTitle.visibility = View.VISIBLE
 			}
 		}
 	}
 
-	private fun addListeners() {
-		/** Image Compression Option Switch's CheckedChangeListener */
+	private fun setListeners() {
+		/* Image Compression Option Switch's CheckedChangeListener */
 		switchImageCompression.setOnCheckedChangeListener { _, isChecked ->
 			tvMaxWidth.isEnabled = isChecked
 			etMaxWidth.isEnabled = isChecked
@@ -122,13 +97,17 @@ class MainActivity : AppCompatActivity() {
 			etQuality.isEnabled = isChecked
 			lytRoot.requestFocus()
 		}
-		/** Open Image Gallery Button's ClickListener */
+		/* Image Gallery Button's ClickListener */
 		btnOpenImageGallery.setOnClickListener {
 			requestToOpenImagePicker(REQUEST_CODE_PICK_IMAGE, ::openUwImagePicker)
 		}
-		/** Open Video Gallery Button's ClickListener */
+		/* Video Gallery Button's ClickListener */
 		btnOpenVideoGallery.setOnClickListener {
 			requestToOpenImagePicker(REQUEST_CODE_PICK_VIDEO, ::openUwImagePicker)
+		}
+		/* Image and Video Gallery Button's ClickListener */
+		btnImageAndVideoGallery.setOnClickListener {
+			requestToOpenImagePicker(REQUEST_CODE_PICK_IMAGE_AND_VIDEO, ::openUwImagePicker)
 		}
 	}
 
@@ -187,6 +166,12 @@ class MainActivity : AppCompatActivity() {
 				.setGridColumnCount(gridColumnCount)
 				.setMaxSelectableMediaCount(maxSelectableMediaCount)
 				.open()
+			REQUEST_CODE_PICK_IMAGE_AND_VIDEO -> UwMediaPicker.with(this)
+				.setRequestCode(requestCode)
+				.setGalleryMode(UwMediaPicker.GalleryMode.ImageAndVideoGallery)
+				.setGridColumnCount(gridColumnCount)
+				.setMaxSelectableMediaCount(maxSelectableMediaCount)
+				.open()
 		}
 	}
 
@@ -236,6 +221,7 @@ class MainActivity : AppCompatActivity() {
 
 		const val REQUEST_CODE_PICK_IMAGE = 10
 		const val REQUEST_CODE_PICK_VIDEO = 11
+		const val REQUEST_CODE_PICK_IMAGE_AND_VIDEO = 12
 
 		init {
 			// For using vector drawables on lower APIs

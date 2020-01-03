@@ -14,9 +14,6 @@ import android.view.View
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
-import android.widget.FrameLayout
-import android.widget.ImageView
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -34,13 +31,12 @@ import com.anilokcun.uwmediapicker.helper.toUri
 import com.anilokcun.uwmediapicker.helper.toastStringRes
 import com.anilokcun.uwmediapicker.listener.GalleryMediaOnLongClickListener
 import com.anilokcun.uwmediapicker.listener.OnRVItemClickListener
-import com.anilokcun.uwmediapicker.model.BaseGalleryMediaModel
-import com.anilokcun.uwmediapicker.model.GalleryMediaBucketModel
-import com.anilokcun.uwmediapicker.model.UWMediaPickerSettingsModel
+import com.anilokcun.uwmediapicker.model.*
 import com.anilokcun.uwmediapicker.provider.GalleryMediaDataProvider
 import com.anilokcun.uwmediapicker.ui.GalleryItemDecoration
 import com.anilokcun.uwmediapicker.ui.dialog.ImagePreviewDialog
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.activity_uw_media_picker.*
 import kotlinx.coroutines.*
 import java.io.File
 import kotlin.coroutines.CoroutineContext
@@ -60,15 +56,6 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	private val galleryMediaProvider by lazy { GalleryMediaDataProvider(this) }
 
 	private lateinit var settings: UWMediaPickerSettingsModel
-
-	// UI Values
-	private val imgToolbarBack by lazy { findViewById<ImageView>(R.id.activity_uw_media_picker_img_toolbar_back) }
-	private val tvToolbarTitle by lazy { findViewById<TextView>(R.id.activity_uw_media_picker_tv_toolbar_title) }
-	private val tvToolbarMediaSelectCount by lazy { findViewById<TextView>(R.id.activity_uw_media_picker_tv_toolbar_selected_media_count) }
-	private val tvToolbarDone by lazy { findViewById<TextView>(R.id.activity_uw_media_picker_tv_toolbar_done) }
-	private val lytProgressBar by lazy { findViewById<FrameLayout>(R.id.activity_uw_media_picker_lyt_progressbar) }
-	private val recyclerView by lazy { findViewById<RecyclerView>(R.id.activity_uw_media_picker_rv) }
-
 	private var toastMaxMediaCountError: Toast? = null
 
 	private val blinkAnimation: AlphaAnimation by lazy {
@@ -86,7 +73,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 
 	private val mediaBucketsList by lazy { arrayListOf<GalleryMediaBucketModel>() }
 	private val mediaList by lazy { arrayListOf<BaseGalleryMediaModel>() }
-	private val selectedMediaPathList by lazy { arrayListOf<String>() }
+	private val selectedMediaList by lazy { arrayListOf<SelectedMediaModel>() }
 
 	private var lastOpenedBucketName: String? = null
 	private var lastOpenedBucketId: String? = null
@@ -115,29 +102,18 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 		job = Job()
 		setContentView(R.layout.activity_uw_media_picker)
 		initPage()
-		addListeners()
+		setListeners()
 	}
 
-	override fun onDestroy() {
-		job.cancel()
-		super.onDestroy()
-	}
-
-	override fun onBackPressed() {
-		// If any bucked opened; close it
-		if (isBucketOpened) {
-			// Hide progress screen
-			lytProgressBar.visibility = View.GONE
-			// Cancel the open media bucket task
-			if (taskOpenMediaBucket != null) taskOpenMediaBucket?.cancel()
-			// Set RecyclerView with MediaBucketList
-			recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryMediaBucketClickListener)
-			// Set isBucketOpened false
-			isBucketOpened = false
-			// Update ToolbarTitle
-			updateToolbarTitle()
-		} else {
-			super.onBackPressed()
+	/** Adds Listeners to UI elements */
+	private fun setListeners() {
+		// Toolbar Back Button
+		imgToolbarBack.setOnClickListener {
+			onBackPressed()
+		}
+		// Toolbar Done Button
+		tvToolbarDone.setOnClickListener {
+			returnResult()
 		}
 	}
 
@@ -181,8 +157,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 		lytProgressBar.visibility = View.VISIBLE
 		launch {
 			try {
-				val task = async(Dispatchers.IO) {
-					// This is background thread.
+				val buckets = withContext(Dispatchers.IO) {
 					when (settings.galleryMode) {
 						UwMediaPicker.GalleryMode.ImageGallery -> {
 							galleryMediaProvider.getImageBuckets()
@@ -190,10 +165,12 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 						UwMediaPicker.GalleryMode.VideoGallery -> {
 							galleryMediaProvider.getVideoBuckets()
 						}
-					}.apply {
+						UwMediaPicker.GalleryMode.ImageAndVideoGallery -> {
+							galleryMediaProvider.getImageAndVideoBuckets()
+						}
 					}
 				}
-				mediaBucketsList.addAll(task.await())
+				mediaBucketsList.addAll(buckets)
 				// This is UI/Main thread
 				recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryMediaBucketClickListener)
 			} catch (e: Exception) {
@@ -213,74 +190,29 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 		}
 	}
 
-	/** Adds Listeners to UI elements */
-	private fun addListeners() {
-		// Toolbar Back Button
-		imgToolbarBack.setOnClickListener { onBackPressed() }
-
-		// Toolbar Done Button
-		tvToolbarDone.setOnClickListener {
-			if (!tvToolbarDone.isActivated) return@setOnClickListener
-			returnResult()
-		}
-	}
-
-	/** Returns selected image paths as result */
-	private fun returnResult() {
-		// If image compression enabled and it's an image gallery;
-		if (settings.imageCompressionEnabled && settings.galleryMode == UwMediaPicker.GalleryMode.ImageGallery) {
-			val progressDialog = getProgressDialog().apply { show() }
-			val compressedMediaPathList = arrayListOf<String>()
-			var hasErrorOccurred = false
-			launch {
-				val task = async(Dispatchers.IO) {
-					// This is background thread.
-					val imageCompressor = ImageCompressor(
-						settings.compressionMaxWidth,
-						settings.compressionMaxHeight,
-						settings.compressFormat,
-						settings.compressionQuality,
-						settings.compressedFileDestinationPath)
-					for (item in selectedMediaPathList) {
-						try {
-							val compressedImageFile = imageCompressor.compress(File(item))
-							compressedMediaPathList.add(compressedImageFile.absolutePath)
-						} catch (e: Exception) {
-							e.message.logError()
-							hasErrorOccurred = true
-						}
-					}
-				}
-				task.await()
-				// This is UI/Main thread
-				progressDialog.dismiss()
-				// If an error has occurred and some media can still be selected; show toast message about it
-				if (compressedMediaPathList.isEmpty()) {
-					this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_media_select_failed)
-					setResult(0, Intent())
-					finish()
-					return@launch
-				}
-				if (hasErrorOccurred && compressedMediaPathList.isNotEmpty()) {
-					this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_some_media_select_failed)
-				}
-				val resultIntent = Intent()
-				resultIntent.putExtra(
-					UwMediaPicker.UwMediaPickerResultKey,
-					arrayOf<String>().plus(compressedMediaPathList)
-				)
-				setResult(Activity.RESULT_OK, resultIntent)
-				finish()
+	/** Sets Media Buckets(Albums) Recycler View */
+	private fun setupMediaBucketRecyclerView() {
+		// Setup recyclerView with mediaList, GalleryMediaClickListener and OnLongClickListener
+		recyclerView.adapter = GalleryMediaRvAdapter(mediaList, galleryMediaClickListener, object : GalleryMediaOnLongClickListener {
+			// Open ImagePreviewDialog when long clicked to image
+			override fun onLongClick(imagePath: String?) {
+				imagePreviewDialog
+					.showPreview(supportFragmentManager, imagePath?.toUri())
 			}
-		} else {
-			val resultIntent = Intent()
-			resultIntent.putExtra(
-				UwMediaPicker.UwMediaPickerResultKey,
-				arrayOf<String>().plus(selectedMediaPathList)
-			)
-			setResult(Activity.RESULT_OK, resultIntent)
-			finish()
-		}
+		})
+		// Add OnItemTouchListener to RecyclerView
+		recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
+			override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
+
+			override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+				// When touch intercept if user quit holding, close ImagePreviewDialog
+				if (imagePreviewDialog.isVisible && e.action == MotionEvent.ACTION_UP)
+					imagePreviewDialog.dismiss()
+				return false
+			}
+
+			override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
+		})
 	}
 
 	/** Gallery Media Bucket's click function */
@@ -304,20 +236,24 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 			launch {
 				try {
 					taskOpenMediaBucket = async(Dispatchers.IO) {
+						val selectedMediaPaths = selectedMediaList.map { it.mediaPath }
 						// This is background thread.
 						when (settings.galleryMode) {
 							UwMediaPicker.GalleryMode.ImageGallery -> {
-								galleryMediaProvider.getImages(mediaBucketsList[position].id!!, selectedMediaPathList)
+								galleryMediaProvider.getImagesOfBucket(mediaBucketsList[position].id!!, selectedMediaPaths)
 							}
 							UwMediaPicker.GalleryMode.VideoGallery -> {
-								galleryMediaProvider.getVideos(mediaBucketsList[position].id!!, selectedMediaPathList)
+								galleryMediaProvider.getVideosOfBucket(mediaBucketsList[position].id!!, selectedMediaPaths)
+							}
+							UwMediaPicker.GalleryMode.ImageAndVideoGallery -> {
+								galleryMediaProvider.getImagesAndVideosOfBucket(mediaBucketsList[position].id!!, selectedMediaPaths)
 							}
 						}
 					}
 					if (taskOpenMediaBucket != null) {
 						mediaList.addAll(taskOpenMediaBucket!!.await())
 					}
-					setMediaBucketRecyclerView()
+					setupMediaBucketRecyclerView()
 				} catch (e: Exception) {
 					// If error occurred, do not save this bucket as a lastOpenedBucket and go back
 					e.toString().logError()
@@ -335,34 +271,9 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 			lytProgressBar.visibility = View.GONE
 			// Update ToolbarTitle
 			updateToolbarTitle()
-			// Set RecyclerView
-			setMediaBucketRecyclerView()
+			// Setup RecyclerView
+			setupMediaBucketRecyclerView()
 		}
-	}
-
-	/** Sets Media Buckets(Albums) Recycler View */
-	private fun setMediaBucketRecyclerView() {
-		// Set recyclerView with mediaList, GalleryMediaClickListener and OnLongClickListener
-		recyclerView.adapter = GalleryMediaRvAdapter(mediaList, galleryMediaClickListener, object : GalleryMediaOnLongClickListener {
-			// Open ImagePreviewDialog when long clicked to image
-			override fun onLongClick(imagePath: String?) {
-				imagePreviewDialog
-					.showPreview(supportFragmentManager, imagePath?.toUri())
-			}
-		})
-		// Add OnItemTouchListener to RecyclerView
-		recyclerView.addOnItemTouchListener(object : RecyclerView.OnItemTouchListener {
-			override fun onTouchEvent(rv: RecyclerView, e: MotionEvent) {}
-
-			override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-				// When touch intercept if user quit holding, close ImagePreviewDialog
-				if (imagePreviewDialog.isVisible && e.action == MotionEvent.ACTION_UP)
-					imagePreviewDialog.dismiss()
-				return false
-			}
-
-			override fun onRequestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {}
-		})
 	}
 
 	/** Gallery Media's click function */
@@ -374,11 +285,14 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 		// If media already selected;
 		if (mediaList[position].selected) {
 			// Mark clicked media as unselected, remove media's path from selectedMediaPathList
-			selectedMediaPathList.remove(mediaList[position].mediaPath)
+			selectedMediaList.removeAll {
+				it.mediaPath == mediaList[position].mediaPath
+			}
+
 			mediaList[position].selected = false
 		} else {
 			// If the maximum number of media is selected
-			if (settings.maxSelectableMediaCount != null && selectedMediaPathList.size == settings.maxSelectableMediaCount) {
+			if (settings.maxSelectableMediaCount != null && selectedMediaList.size == settings.maxSelectableMediaCount) {
 				toastMaxMediaCountError?.cancel()
 				// Show error toast about max selectable media count
 				toastMaxMediaCountError = this.toastStringRes(R.string.uwmediapicker_toast_error_max_media_selected)
@@ -387,8 +301,11 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 				return
 			}//Else, select it;
 			// Mark clicked media as selected, add media's path to selectedMediaPathList
-			mediaList[position].mediaPath?.let { selectedMediaPathList.add(it) }
-			mediaList[position].selected = true
+			mediaList[position].mediaPath?.let {
+				val mediaType = if (mediaList[position] is GalleryImageModel) MediaType.IMAGE else MediaType.VIDEO
+				selectedMediaList.add(SelectedMediaModel(it, mediaType))
+				mediaList[position].selected = true
+			}
 		}
 		updateSelectedMediaCountTextAndDoneButton()
 		recyclerView.adapter?.notifyItemChanged(position)
@@ -401,6 +318,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 				when (settings.galleryMode) {
 					UwMediaPicker.GalleryMode.ImageGallery -> getString(R.string.uwmediapicker_toolbar_title_image_library)
 					UwMediaPicker.GalleryMode.VideoGallery -> getString(R.string.uwmediapicker_toolbar_title_video_library)
+					UwMediaPicker.GalleryMode.ImageAndVideoGallery -> getString(R.string.uwmediapicker_toolbar_title_image_and_video_library)
 				}
 			} else {
 				lastOpenedBucketName
@@ -410,19 +328,19 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	/** Updates the SelectedMediaCount Text, hide it if no media selected
 	 * And if any media is selected activate the Done Button */
 	private fun updateSelectedMediaCountTextAndDoneButton() {
-		if (selectedMediaPathList.isNotEmpty()) {
+		if (selectedMediaList.isNotEmpty()) {
 			if (settings.maxSelectableMediaCount != null) {
 				tvToolbarMediaSelectCount.text = getString(
 					R.string.uwmediapicker_toolbar_text_uw_media_picker_selected_media_count,
-					selectedMediaPathList.size, settings.maxSelectableMediaCount)
+					selectedMediaList.size, settings.maxSelectableMediaCount)
 				tvToolbarMediaSelectCount.visibility = View.VISIBLE
 			} else {
 				tvToolbarMediaSelectCount.visibility = View.GONE
 			}
-			tvToolbarDone.isActivated = true
+			tvToolbarDone.isEnabled = true
 		} else {
 			tvToolbarMediaSelectCount.visibility = View.GONE
-			tvToolbarDone.isActivated = false
+			tvToolbarDone.isEnabled = false
 		}
 	}
 
@@ -438,6 +356,81 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 			.create().apply {
 				window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 			}
+	}
+
+	/** Returns selected image paths as result */
+	private fun returnResult() {
+		if (selectedMediaList.isEmpty()) {
+			this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_media_select_failed)
+			setResult(0, Intent())
+			finish()
+			return
+		}
+		launch {
+			val progressDialog = getProgressDialog().apply { show() }
+			var hasErrorOccurred = false
+
+			if (settings.imageCompressionEnabled) {
+				withContext(Dispatchers.IO) {
+					// This is background thread.
+					val imageCompressor = ImageCompressor(
+						settings.compressionMaxWidth,
+						settings.compressionMaxHeight,
+						settings.compressFormat,
+						settings.compressionQuality,
+						settings.compressedFileDestinationPath)
+					for ((index, selectedMedia) in selectedMediaList.withIndex()) {
+						if (selectedMedia.mediaType == MediaType.IMAGE) {
+							try {
+								val compressedImageFile = imageCompressor.compress(File(selectedMedia.mediaPath))
+								selectedMediaList.removeAt(index)
+								selectedMediaList.add(index, SelectedMediaModel(compressedImageFile.absolutePath, MediaType.IMAGE))
+							} catch (e: Exception) {
+								e.message.logError()
+								hasErrorOccurred = true
+							}
+						}
+					}
+				}
+			}
+			// This is UI/Main thread
+			progressDialog.dismiss()
+			// If an error has occurred and some media can still be selected; show toast message about it
+			if (hasErrorOccurred) {
+				this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_some_media_select_failed)
+			}
+			val imagesAndVideosPair = selectedMediaList.partition { it.mediaType == MediaType.IMAGE }
+			val imagesArray = imagesAndVideosPair.first.map { it.mediaPath }.toTypedArray()
+			val videosArray = imagesAndVideosPair.second.map { it.mediaPath }.toTypedArray()
+			val resultIntent = Intent()
+			resultIntent.putExtra(UwMediaPicker.UwMediaPickerImagesArrayKey, imagesArray)
+			resultIntent.putExtra(UwMediaPicker.UwMediaPickerVideosArrayKey, videosArray)
+			setResult(Activity.RESULT_OK, resultIntent)
+			finish()
+		}
+	}
+
+	override fun onBackPressed() {
+		// If any bucked opened; close it
+		if (isBucketOpened) {
+			// Hide progress screen
+			lytProgressBar.visibility = View.GONE
+			// Cancel the open media bucket task
+			if (taskOpenMediaBucket != null) taskOpenMediaBucket?.cancel()
+			// Set RecyclerView with MediaBucketList
+			recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryMediaBucketClickListener)
+			// Set isBucketOpened false
+			isBucketOpened = false
+			// Update ToolbarTitle
+			updateToolbarTitle()
+		} else {
+			super.onBackPressed()
+		}
+	}
+
+	override fun onDestroy() {
+		job.cancel()
+		super.onDestroy()
 	}
 
 	companion object {

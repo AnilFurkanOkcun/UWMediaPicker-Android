@@ -11,7 +11,7 @@
         android:background="@color/colorUwMediaPickerToolbarBg">
 
         <ImageView
-            android:id="@+id/activity_uw_media_picker_img_toolbar_back"
+	        android:id="@+id/imgToolbarBack"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/uwmediapicker_toolbar_height"
             android:layout_gravity="start"
@@ -19,13 +19,13 @@
             android:contentDescription="@string/uwmediapicker_content_description_back_button"
             android:padding="@dimen/uwmediapicker_spacing_normal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/activity_uw_media_picker_tv_toolbar_title"
+	        app:layout_constraintEnd_toStartOf="@id/tvToolbarTitle"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/uwmediapicker_ic_arrow_back" />
 
         <TextView
-            android:id="@+id/activity_uw_media_picker_tv_toolbar_title"
+	        android:id="@+id/tvToolbarTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             style="@style/UwMediaPickerTvToolbarTitle"
@@ -33,14 +33,14 @@
             android:layout_marginStart="@dimen/uwmediapicker_spacing_small"
             android:ellipsize="end"
             android:maxLines="1"
-            app:layout_constraintBottom_toTopOf="@id/activity_uw_media_picker_tv_toolbar_selected_media_count"
-            app:layout_constraintEnd_toStartOf="@id/activity_uw_media_picker_tv_toolbar_done"
-            app:layout_constraintStart_toEndOf="@id/activity_uw_media_picker_img_toolbar_back"
+	        app:layout_constraintBottom_toTopOf="@id/tvToolbarMediaSelectCount"
+	        app:layout_constraintEnd_toStartOf="@id/tvToolbarDone"
+	        app:layout_constraintStart_toEndOf="@id/imgToolbarBack"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="packed" />
 
         <TextView
-            android:id="@+id/activity_uw_media_picker_tv_toolbar_selected_media_count"
+	        android:id="@+id/tvToolbarMediaSelectCount"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="0dp"
@@ -48,36 +48,36 @@
             android:textSize="@dimen/uwmediapicker_text_size_toolbar_subtext"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/activity_uw_media_picker_tv_toolbar_done"
-            app:layout_constraintStart_toStartOf="@id/activity_uw_media_picker_tv_toolbar_title"
-            app:layout_constraintTop_toBottomOf="@id/activity_uw_media_picker_tv_toolbar_title" />
+	        app:layout_constraintEnd_toStartOf="@id/tvToolbarDone"
+	        app:layout_constraintStart_toStartOf="@id/tvToolbarTitle"
+	        app:layout_constraintTop_toBottomOf="@id/tvToolbarTitle" />
 
         <TextView
-            android:id="@+id/activity_uw_media_picker_tv_toolbar_done"
+	        android:id="@+id/tvToolbarDone"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center"
             android:paddingEnd="@dimen/uwmediapicker_spacing_normal"
             android:paddingStart="@dimen/uwmediapicker_spacing_normal"
             android:text="@string/uwmediapicker_toolbar_done"
-            android:textColor="@color/uwmediapicker_color_activatable_done"
+	        android:textColor="@color/uwmediapicker_color_btn_text_done"
             android:textSize="@dimen/uwmediapicker_text_size_toolbar_title"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/activity_uw_media_picker_tv_toolbar_title"
+	        app:layout_constraintStart_toEndOf="@id/tvToolbarTitle"
             app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/activity_uw_media_picker_rv"
+	    android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/uwmediapicker_toolbar_height"
         android:background="@color/colorUwMediaPickerPageBackground" />
 
     <FrameLayout
-        android:id="@+id/activity_uw_media_picker_lyt_progressbar"
+	    android:id="@+id/lytProgressBar"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/uwmediapicker_toolbar_height"

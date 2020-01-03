@@ -31,28 +31,20 @@ internal class GalleryVideoVH(itemView: View) : BaseGalleryMediaVH(itemView) {
 		super.bind(item, onMediaClickListener, imgThumbnail, imgSelected)
 
 		// Video Duration
+		val videoDurationMillisecond = item.videoDuration
+		val videoDurationSecond = TimeUnit.MILLISECONDS.toSeconds(videoDurationMillisecond) % 60
+		val videoDurationMinute = TimeUnit.MILLISECONDS.toMinutes(videoDurationMillisecond) % 60
+		val videoDurationHour = TimeUnit.MILLISECONDS.toHours(videoDurationMillisecond)
 		tvVideoDuration.textSize = UwMediaPickerActivity.GALLERY_TEXT_SIZE_SP
-		tvVideoDuration.text = if (item.videoDuration != null) {
-			val videoDurationMillisecond =
-				if (item.mediaPath == "/storage/54FE-2198/Video Samples/SampleVideo_360x240_30mb.mp4")
-					item.videoDuration.toLong() + 7200000
-				else {
-					item.videoDuration.toLong()
-				}
-			val videoDurationSecond = TimeUnit.MILLISECONDS.toSeconds(videoDurationMillisecond) % 60
-			val videoDurationMinute = TimeUnit.MILLISECONDS.toMinutes(videoDurationMillisecond) % 60
-			val videoDurationHour = TimeUnit.MILLISECONDS.toHours(videoDurationMillisecond)
-
-			if (videoDurationHour > 0) {
-				itemView.context
-					.getString(R.string.uwmediapicker_time_format_hour_min_sec,
-						videoDurationHour, videoDurationMinute, videoDurationSecond)
-			} else {
-				itemView.context
-					.getString(R.string.uwmediapicker_time_format_min_sec,
-						videoDurationMinute, videoDurationSecond)
-			}
-		} else ""
+		tvVideoDuration.text = if (videoDurationHour > 0) {
+			itemView.context
+				.getString(R.string.uwmediapicker_time_format_hour_min_sec,
+					videoDurationHour, videoDurationMinute, videoDurationSecond)
+		} else {
+			itemView.context
+				.getString(R.string.uwmediapicker_time_format_min_sec,
+					videoDurationMinute, videoDurationSecond)
+		}
 
 		// Video Size
 		tvVideoSize.textSize = UwMediaPickerActivity.GALLERY_TEXT_SIZE_SP
@@ -63,7 +55,7 @@ internal class GalleryVideoVH(itemView: View) : BaseGalleryMediaVH(itemView) {
 				val units = arrayListOf("B", "KB", "MB", "GB", "TB")
 				val digitGroups = (log10(item.videoSize.toDouble()) / log10(1024.0)).toInt()
 				TextUtils.concat(DecimalFormat("#,##0.#").format(item.videoSize.toDouble()
-						/ (1024.0.pow(digitGroups.toDouble()))), " ", units[digitGroups])
+					/ (1024.0.pow(digitGroups.toDouble()))), " ", units[digitGroups])
 			}
 		} else ""
 	}

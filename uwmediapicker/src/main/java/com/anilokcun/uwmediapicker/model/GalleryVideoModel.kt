@@ -9,7 +9,7 @@ package com.anilokcun.uwmediapicker.model
 internal data class GalleryVideoModel(
 	override val mediaPath: String?,
 	override var selected: Boolean,
-	val videoDuration: String?,
+	val videoDuration: Long,
 	val videoSize: String?,
 	override val itemType: Int = BaseGalleryModel.TYPE_GALLERY_VIDEO
 ) : BaseGalleryModel, BaseGalleryMediaModel

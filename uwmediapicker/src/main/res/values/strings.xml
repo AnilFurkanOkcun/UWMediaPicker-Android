@@ -2,6 +2,7 @@
     <!-- Toolbar Texts -->
     <string name="uwmediapicker_toolbar_title_image_library">Image Library</string>
     <string name="uwmediapicker_toolbar_title_video_library">Video Library</string>
+    <string name="uwmediapicker_toolbar_title_image_and_video_library">Image&amp;Video Library</string>
     <string name="uwmediapicker_toolbar_text_uw_media_picker_selected_media_count" tools:ignore="PluralsCandidate">%d/%d selected</string>
     <string name="uwmediapicker_toolbar_done">Done</string>
 

@@ -9,5 +9,6 @@
     <string name="compression_quality">Compression quality(%)</string>
     <string name="image_gallery">Image Gallery</string>
     <string name="video_gallery">Video Gallery</string>
+	<string name="image_and_video_gallery">Image &amp; Video Gallery</string>
     <string name="selected_media_title">Selected Media</string>
 </resources>

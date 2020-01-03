@@ -11,8 +11,8 @@
     <color name="colorUwMediaPickerBackButton">#272727</color>
     <color name="colorUwMediaPickerToolbarTitle">#404040</color>
     <color name="colorUwMediaPickerToolbarSubtext">#8D8D8D</color>
-    <color name="colorUwMediaPickerDoneActive">#0192D2</color>
-    <color name="colorUwMediaPickerDoneInactive">#B3B3B3</color>
+	<color name="colorUwMediaPickerBtnTextDoneEnable">#0192D2</color>
+	<color name="colorUwMediaPickerBtnTextDoneDisable">#B3B3B3</color>
 
     <!-- Gallery Item Colors-->
     <color name="colorUwMediaPickerBucketBottomStrip">#8C000000</color><!--%55 Opaque Black -->
