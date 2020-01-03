@@ -46,15 +46,9 @@ dependencies {
 	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.2.0'
 }
 ```
-**2. Add `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permission to manifest**
 
- ```xml
- <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> <!--For compression-->
- ```
- 
 ## Usage
-*Make sure you have `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE`(For compression) permission before use.*
+*If you use compression, make sure you have `WRITE_EXTERNAL_STORAGE` permission.*
 
 **Initializing UW Media Picker**
 ```kotlin
