@@ -43,7 +43,7 @@ Add the dependency to your app level build.gradle:
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.1.0'
+	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.2.0'
 }
 ```
 **2. Add `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE` permission to manifest**
