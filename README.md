@@ -52,13 +52,6 @@ dependencies {
  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/> <!--For compression-->
  ```
-**3. Add `UwMediaPickerActivity` into your AndroidManifest.xml**
- ```xml
- <activity
-    android:name="com.anilokcun.uwmediapicker.ui.activity.UwMediaPickerActivity"
-    android:screenOrientation="portrait"
-    android:theme="@style/Theme.AppCompat.NoActionBar" />
- ```
  
 ## Usage
 *Make sure you have `READ_EXTERNAL_STORAGE` and `WRITE_EXTERNAL_STORAGE`(For compression) permission before use.*
