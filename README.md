@@ -43,7 +43,7 @@ Add the dependency to your app level build.gradle:
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.2.0'
+	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.2.1'
 }
 ```
 
