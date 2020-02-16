@@ -48,7 +48,8 @@ dependencies {
 ```
 
 ## Usage
-*If you use compression, make sure you have `WRITE_EXTERNAL_STORAGE` permission.*
+*Make sure you have `READ_EXTERNAL_STORAGE` permission.*
+*In addition, if you use compression make sure you have `WRITE_EXTERNAL_STORAGE` permission too.*
 
 **Initializing UW Media Picker**
 ```kotlin
