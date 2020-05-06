@@ -50,6 +50,7 @@ dependencies {
 ## Usage
 *Make sure you have `READ_EXTERNAL_STORAGE` permission.*
 *In addition, if you use compression make sure you have `WRITE_EXTERNAL_STORAGE` permission too.*
+*On Android Q, you should add `android:requestLegacyExternalStorage="true"` into your application tag in manifest*
 
 **Initializing UW Media Picker**
 ```kotlin
