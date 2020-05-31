@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Toast
@@ -146,19 +145,17 @@ class MainActivity : AppCompatActivity() {
 		when (requestCode) {
 			REQUEST_CODE_PICK_IMAGE ->
 				UwMediaPicker.with(this)
-					.setRequestCode(requestCode)
-					.setGalleryMode(UwMediaPicker.GalleryMode.ImageGallery)
-					.setGridColumnCount(gridColumnCount)
-					.setMaxSelectableMediaCount(maxSelectableMediaCount)
-					.setLightStatusBar(true)
-					.enableImageCompression(switchImageCompression.isChecked)
-					.setCompressionMaxWidth(maxWidth)
-					.setCompressionMaxHeight(maxHeight)
-					.setCompressFormat(Bitmap.CompressFormat.JPEG)
-					.setCompressionQuality(quality)
-					.setCompressedFileDestinationPath(Environment
-						.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-						.absolutePath)
+						.setRequestCode(requestCode)
+						.setGalleryMode(UwMediaPicker.GalleryMode.ImageGallery)
+						.setGridColumnCount(gridColumnCount)
+						.setMaxSelectableMediaCount(maxSelectableMediaCount)
+						.setLightStatusBar(true)
+						.enableImageCompression(switchImageCompression.isChecked)
+						.setCompressionMaxWidth(maxWidth)
+						.setCompressionMaxHeight(maxHeight)
+						.setCompressFormat(Bitmap.CompressFormat.JPEG)
+						.setCompressionQuality(quality)
+						.setCompressedFileDestinationPath("${application.getExternalFilesDir(null)!!.path}/Pictures")
 					.open()
 			REQUEST_CODE_PICK_VIDEO -> UwMediaPicker.with(this)
 				.setRequestCode(requestCode)

@@ -3,7 +3,6 @@ package com.anilokcun.uwmediapicker
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Environment
 import androidx.fragment.app.Fragment
 import com.anilokcun.uwmediapicker.constants.Constants
 import com.anilokcun.uwmediapicker.model.UWMediaPickerSettingsModel
@@ -22,26 +21,24 @@ class UwMediaPicker private constructor() {
 	private var fragmentWeakReference: WeakReference<Fragment>? = null
 
 	private var requestCode: Int = 0
-
+	
 	private var galleryMode: GalleryMode = GalleryMode.ImageGallery
 	private var maxSelectableMediaCount: Int? = null
 	private var gridColumnCount: Int = 3
 	private var lightStatusBar: Boolean = true
-
+	
 	private var imageCompressionEnabled: Boolean = false
 	private var compressionMaxWidth = 1280F
 	private var compressionMaxHeight = 720F
 	private var compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 	private var compressionQuality = 85
-	private var compressedFileDestinationPath: String = Environment
-		.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-		.absolutePath
-
+	private var compressedFileDestinationPath: String? = null
+	
 	fun setRequestCode(requestCode: Int): UwMediaPicker {
 		this.requestCode = requestCode
 		return this
 	}
-
+	
 	fun setGalleryMode(galleryMode: GalleryMode): UwMediaPicker {
 		this.galleryMode = galleryMode
 		return this
@@ -111,17 +108,27 @@ class UwMediaPicker private constructor() {
 	}
 
 	fun open() {
+		val compressedFileDestinationPathValue = if (compressedFileDestinationPath == null) {
+			val application = if (activityWeakReference != null) {
+				activityWeakReference!!.get()!!.application
+			} else {
+				fragmentWeakReference!!.get()!!.requireActivity().application
+			}
+			"${application.getExternalFilesDir(null)!!.path}/Pictures"
+		} else {
+			compressedFileDestinationPath!!
+		}
 		val uwMediaPickerSettings = UWMediaPickerSettingsModel(
-			galleryMode,
-			maxSelectableMediaCount,
-			gridColumnCount,
-			lightStatusBar,
-			imageCompressionEnabled,
-			compressionMaxWidth,
-			compressionMaxHeight,
-			compressFormat,
-			compressionQuality,
-			compressedFileDestinationPath
+				galleryMode,
+				maxSelectableMediaCount,
+				gridColumnCount,
+				lightStatusBar,
+				imageCompressionEnabled,
+				compressionMaxWidth,
+				compressionMaxHeight,
+				compressFormat,
+				compressionQuality,
+				compressedFileDestinationPathValue
 		)
 		if (activityWeakReference != null) {
 			val uwMediaPickerIntent = Intent(activityWeakReference?.get(), UwMediaPickerActivity::class.java)
