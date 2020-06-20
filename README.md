@@ -57,7 +57,6 @@ dependencies {
 ```kotlin
  UwMediaPicker
 	.with(this)						// Activity or Fragment
- 	.setRequestCode(REQUEST_CODE)				// Give request code, default is 0
     	.setGalleryMode(UwMediaPicker.GalleryMode.ImageGallery) // GalleryMode: ImageGallery/VideoGallery/ImageAndVideoGallery, default is ImageGallery
  	.setGridColumnCount(4)                                  // Grid column count, default is 3
     	.setMaxSelectableMediaCount(10)                         // Maximum selectable media count, default is null which means infinite
