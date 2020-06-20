@@ -21,6 +21,7 @@ Easy to use and customizable media picker library to pick multiple images(with c
 * Limit the maximum number of selectable media
 * Customizable grid column count
 * All colors customizable by overriding it 
+* Easy to use with callback
 
 ## Installation
 *You can have a look at the [sample project.](https://github.com/AnilFurkanOkcun/UWMediaPicker-Android/tree/master/sample)*
@@ -43,7 +44,7 @@ Add the dependency to your app level build.gradle:
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.2.2'
+	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.3.0'
 }
 ```
 
@@ -67,18 +68,7 @@ dependencies {
 	.setCompressFormat(Bitmap.CompressFormat.JPEG)		// Compressed image's format, default is JPEG
 	.setCompressionQuality(85)				// Image compression quality, default is 85
 	.setCompressedFileDestinationPath(destinationPath)	// Compressed image file's destination path, default is "${application.getExternalFilesDir(null).path}/Pictures"
- 	.open()
-```
-
-**Getting results**
-```kotlin
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-	super.onActivityResult(requestCode, resultCode, data)
-	if (data != null && resultCode == Activity.RESULT_OK && requestCode == REQUEST_CODE){
-		val selectedImagesPathsList = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerImagesArrayKey)
-		val selectedVideosPathsList = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerVideosArrayKey)
-	}
-}
+ 	.launch{selectedMediaList-> } // (::onMediaSelected)	// Will be called when media is selected
 ```
 
 ## UI Customization
