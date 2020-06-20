@@ -17,13 +17,14 @@ import java.util.*
  */
 
 internal class SelectedMediaRvAdapter(
-	private var itemList: ArrayList<String>
+	private var itemList: ArrayList<String>,
+	private val gridSize: Int
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 	/** Creates View for each item in the List */
 	override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 		return MediaVH(ImageView(parent.context).apply {
-			RecyclerView.LayoutParams(MainActivity.GRID_SIZE, MainActivity.GRID_SIZE)
+			RecyclerView.LayoutParams(gridSize, gridSize)
 			adjustViewBounds = true
 		})
 	}
@@ -34,7 +35,7 @@ internal class SelectedMediaRvAdapter(
 			.load(itemList[position])
 			.apply(
 				RequestOptions()
-					.override(MainActivity.GRID_SIZE).centerCrop()
+					.override(gridSize).centerCrop()
 					.placeholder(ColorDrawable(ContextCompat
 						.getColor(holder.itemView.context, R.color.colorImagePlaceHolder))))
 			.into(holder.itemView as ImageView)

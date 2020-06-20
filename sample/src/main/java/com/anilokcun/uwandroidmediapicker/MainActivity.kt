@@ -1,8 +1,6 @@
 package com.anilokcun.uwandroidmediapicker
 
 import android.Manifest
-import android.app.Activity
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
@@ -17,6 +15,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anilokcun.uwmediapicker.UwMediaPicker
+import com.anilokcun.uwmediapicker.model.UwMediaPickerMediaModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 /**
@@ -26,10 +25,10 @@ import kotlinx.android.synthetic.main.activity_main.*
  */
 
 class MainActivity : AppCompatActivity() {
-
+	
 	private val selectedMediaGridColumnCount = 5
-	private val selectedMediaPaths by lazy { arrayListOf<String>() }
-
+	private val allSelectedMediaPaths by lazy { arrayListOf<String>() }
+	
 	override fun onCreate(savedInstanceState: Bundle?) {
 		super.onCreate(savedInstanceState)
 		setContentView(R.layout.activity_main)
@@ -41,7 +40,7 @@ class MainActivity : AppCompatActivity() {
 		val displayMetrics = DisplayMetrics()
 		windowManager.defaultDisplay.getMetrics(displayMetrics)
 		val deviceWidth = displayMetrics.widthPixels
-		GRID_SIZE = deviceWidth / selectedMediaGridColumnCount
+		val gridSize = deviceWidth / selectedMediaGridColumnCount
 		// Make compression options inactive
 		tvMaxWidth.isEnabled = false
 		etMaxWidth.isEnabled = false
@@ -57,34 +56,10 @@ class MainActivity : AppCompatActivity() {
 			resources.getDimensionPixelSize(com.anilokcun.uwmediapicker.R.dimen.uwmediapicker_gallery_spacing),
 			selectedMediaGridColumnCount
 		))
-		rvSelectedMedia.adapter = SelectedMediaRvAdapter(selectedMediaPaths)
+		rvSelectedMedia.adapter = SelectedMediaRvAdapter(allSelectedMediaPaths, gridSize)
 		setListeners()
 	}
-
-	override fun onRequestPermissionsResult(requestCode: Int,
-	                                        permissions: Array<String>, grantResults: IntArray) {
-		when (requestCode) {
-			REQUEST_CODE_PICK_IMAGE, REQUEST_CODE_PICK_VIDEO -> {
-				handleMediaPickRequest(grantResults, requestCode, ::openUwImagePicker)
-			}
-		}
-	}
-
-	override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-		super.onActivityResult(requestCode, resultCode, data)
-		if (data == null || resultCode != Activity.RESULT_OK) return
-		when (requestCode) {
-			REQUEST_CODE_PICK_IMAGE, REQUEST_CODE_PICK_VIDEO, REQUEST_CODE_PICK_IMAGE_AND_VIDEO -> {
-				val selectedImagesPathsList = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerImagesArrayKey)
-				val selectedVideosPathsList = data.getStringArrayExtra(UwMediaPicker.UwMediaPickerVideosArrayKey)
-				selectedImagesPathsList?.let { selectedMediaPaths.addAll(it) }
-				selectedVideosPathsList?.let { selectedMediaPaths.addAll(it) }
-				(rvSelectedMedia.adapter as SelectedMediaRvAdapter).update(selectedMediaPaths)
-				tvSelectedMediaTitle.visibility = View.VISIBLE
-			}
-		}
-	}
-
+	
 	private fun setListeners() {
 		/* Image Compression Option Switch's CheckedChangeListener */
 		switchImageCompression.setOnCheckedChangeListener { _, isChecked ->
@@ -98,20 +73,20 @@ class MainActivity : AppCompatActivity() {
 		}
 		/* Image Gallery Button's ClickListener */
 		btnOpenImageGallery.setOnClickListener {
-			requestToOpenImagePicker(REQUEST_CODE_PICK_IMAGE, ::openUwImagePicker)
+			requestToOpenImagePicker(PERMISSION_REQUEST_CODE_PICK_IMAGE, UwMediaPicker.GalleryMode.ImageGallery, ::openUwMediaPicker)
 		}
 		/* Video Gallery Button's ClickListener */
 		btnOpenVideoGallery.setOnClickListener {
-			requestToOpenImagePicker(REQUEST_CODE_PICK_VIDEO, ::openUwImagePicker)
+			requestToOpenImagePicker(PERMISSION_REQUEST_CODE_PICK_VIDEO, UwMediaPicker.GalleryMode.VideoGallery, ::openUwMediaPicker)
 		}
 		/* Image and Video Gallery Button's ClickListener */
 		btnImageAndVideoGallery.setOnClickListener {
-			requestToOpenImagePicker(REQUEST_CODE_PICK_IMAGE_AND_VIDEO, ::openUwImagePicker)
+			requestToOpenImagePicker(PERMISSION_REQUEST_CODE_PICK_IMAGE_VIDEO, UwMediaPicker.GalleryMode.ImageAndVideoGallery, ::openUwMediaPicker)
 		}
 	}
-
+	
 	/** Opens UwMediaPicker for select images*/
-	private fun openUwImagePicker(requestCode: Int) {
+	private fun openUwMediaPicker(galleryMode: UwMediaPicker.GalleryMode) {
 		val gridColumnCount =
 			if (etGridColumnCount.text.isNotEmpty()) {
 				etGridColumnCount.text.toString().toInt()
@@ -142,38 +117,34 @@ class MainActivity : AppCompatActivity() {
 			} else {
 				85
 			}
-		when (requestCode) {
-			REQUEST_CODE_PICK_IMAGE ->
-				UwMediaPicker.with(this)
-						.setRequestCode(requestCode)
-						.setGalleryMode(UwMediaPicker.GalleryMode.ImageGallery)
-						.setGridColumnCount(gridColumnCount)
-						.setMaxSelectableMediaCount(maxSelectableMediaCount)
-						.setLightStatusBar(true)
-						.enableImageCompression(switchImageCompression.isChecked)
-						.setCompressionMaxWidth(maxWidth)
-						.setCompressionMaxHeight(maxHeight)
-						.setCompressFormat(Bitmap.CompressFormat.JPEG)
-						.setCompressionQuality(quality)
-						.setCompressedFileDestinationPath("${application.getExternalFilesDir(null)!!.path}/Pictures")
-					.open()
-			REQUEST_CODE_PICK_VIDEO -> UwMediaPicker.with(this)
-				.setRequestCode(requestCode)
-				.setGalleryMode(UwMediaPicker.GalleryMode.VideoGallery)
-				.setGridColumnCount(gridColumnCount)
-				.setMaxSelectableMediaCount(maxSelectableMediaCount)
-				.open()
-			REQUEST_CODE_PICK_IMAGE_AND_VIDEO -> UwMediaPicker.with(this)
-				.setRequestCode(requestCode)
-				.setGalleryMode(UwMediaPicker.GalleryMode.ImageAndVideoGallery)
-				.setGridColumnCount(gridColumnCount)
-				.setMaxSelectableMediaCount(maxSelectableMediaCount)
-				.open()
+		UwMediaPicker.with(this)
+			.setGalleryMode(galleryMode)
+			.setGridColumnCount(gridColumnCount)
+			.setMaxSelectableMediaCount(maxSelectableMediaCount)
+			.setLightStatusBar(true)
+			.enableImageCompression(switchImageCompression.isChecked)
+			.setCompressionMaxWidth(maxWidth)
+			.setCompressionMaxHeight(maxHeight)
+			.setCompressFormat(Bitmap.CompressFormat.JPEG)
+			.setCompressionQuality(quality)
+			.setCompressedFileDestinationPath("${application.getExternalFilesDir(null)!!.path}/Pictures")
+			.launch(::onMediaSelected)
+		
+	}
+	
+	private fun onMediaSelected(selectedMediaList: List<UwMediaPickerMediaModel>?) {
+		if (selectedMediaList != null) {
+			val selectedMediaPathList = selectedMediaList.map { it.mediaPath }
+			allSelectedMediaPaths.addAll(selectedMediaPathList)
+			(rvSelectedMedia.adapter as SelectedMediaRvAdapter).update(allSelectedMediaPaths)
+			tvSelectedMediaTitle.visibility = View.VISIBLE
+		} else {
+			Toast.makeText(this, "Unexpected Error", Toast.LENGTH_SHORT).show()
 		}
 	}
-
+	
 	/** Request to open Image Picker Intent and Handle the permissions */
-	private fun requestToOpenImagePicker(requestCode: Int, openMediaPickerFunc: ((Int) -> Unit)) {
+	private fun requestToOpenImagePicker(requestCode: Int, galleryMode: UwMediaPicker.GalleryMode, openMediaPickerFunc: (UwMediaPicker.GalleryMode) -> Unit) {
 		if (ContextCompat.checkSelfPermission(this.applicationContext,
 				Manifest.permission.READ_EXTERNAL_STORAGE)
 			!= PackageManager.PERMISSION_GRANTED) {
@@ -190,16 +161,16 @@ class MainActivity : AppCompatActivity() {
 			}
 		} else {
 			// Permission has already been granted
-			openMediaPickerFunc.invoke(requestCode)
+			openMediaPickerFunc.invoke(galleryMode)
 		}
 	}
-
+	
 	/** Handles Media Pick Request */
-	private fun handleMediaPickRequest(grantResults: IntArray, requestCode: Int, openImagePickerFunc: ((Int) -> Unit)) {
+	private fun handleMediaPickPermissionRequest(grantResults: IntArray, galleryMode: UwMediaPicker.GalleryMode, openMediaPicker: (UwMediaPicker.GalleryMode) -> Unit) {
 		// If request is cancelled, the result arrays are empty.
 		if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
 			// Permission granted
-			openImagePickerFunc.invoke(requestCode)
+			openMediaPicker.invoke(galleryMode)
 		} else {
 			// Permission denied
 			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
@@ -212,14 +183,27 @@ class MainActivity : AppCompatActivity() {
 		}
 		return
 	}
-
+	
+	override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+		super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+		when (requestCode) {
+			PERMISSION_REQUEST_CODE_PICK_IMAGE -> {
+				handleMediaPickPermissionRequest(grantResults, UwMediaPicker.GalleryMode.ImageGallery, ::openUwMediaPicker)
+			}
+			PERMISSION_REQUEST_CODE_PICK_VIDEO -> {
+				handleMediaPickPermissionRequest(grantResults, UwMediaPicker.GalleryMode.VideoGallery, ::openUwMediaPicker)
+			}
+			PERMISSION_REQUEST_CODE_PICK_IMAGE_VIDEO -> {
+				handleMediaPickPermissionRequest(grantResults, UwMediaPicker.GalleryMode.ImageAndVideoGallery, ::openUwMediaPicker)
+			}
+		}
+	}
+	
 	companion object {
-		var GRID_SIZE = 0
-
-		const val REQUEST_CODE_PICK_IMAGE = 10
-		const val REQUEST_CODE_PICK_VIDEO = 11
-		const val REQUEST_CODE_PICK_IMAGE_AND_VIDEO = 12
-
+		const val PERMISSION_REQUEST_CODE_PICK_IMAGE = 9
+		const val PERMISSION_REQUEST_CODE_PICK_VIDEO = 10
+		const val PERMISSION_REQUEST_CODE_PICK_IMAGE_VIDEO = 11
+		
 		init {
 			// For using vector drawables on lower APIs
 			AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)

@@ -1,5 +1,5 @@
 package com.anilokcun.uwmediapicker.model
 
-enum class MediaType {
+enum class UwMediaPickerMediaType {
 	IMAGE, VIDEO
 }

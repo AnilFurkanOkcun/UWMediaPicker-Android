@@ -73,7 +73,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	
 	private val mediaBucketsList by lazy { arrayListOf<GalleryMediaBucketModel>() }
 	private val mediaList by lazy { arrayListOf<BaseGalleryMediaModel>() }
-	private val selectedMediaList by lazy { arrayListOf<SelectedMediaModel>() }
+	private val selectedMediaList by lazy { arrayListOf<UwMediaPickerMediaModel>() }
 	
 	private var lastOpenedBucketName: String? = null
 	private var lastOpenedBucketId: String? = null
@@ -302,8 +302,8 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 			}//Else, select it;
 			// Mark clicked media as selected, add media's path to selectedMediaPathList
 			mediaList[position].mediaPath?.let {
-				val mediaType = if (mediaList[position] is GalleryImageModel) MediaType.IMAGE else MediaType.VIDEO
-				selectedMediaList.add(SelectedMediaModel(it, mediaType))
+				val mediaType = if (mediaList[position] is GalleryImageModel) UwMediaPickerMediaType.IMAGE else UwMediaPickerMediaType.VIDEO
+				selectedMediaList.add(UwMediaPickerMediaModel(it, mediaType))
 				mediaList[position].selected = true
 			}
 		}
@@ -362,7 +362,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	private fun returnResult() {
 		if (selectedMediaList.isEmpty()) {
 			this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_media_select_failed)
-			setResult(0, Intent())
+			setResult(Activity.RESULT_CANCELED, Intent())
 			finish()
 			return
 		}
@@ -380,7 +380,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 							settings.compressionQuality,
 							settings.compressedFileDestinationPath)
 					for ((index, selectedMedia) in selectedMediaList.withIndex()) {
-						if (selectedMedia.mediaType == MediaType.IMAGE) {
+						if (selectedMedia.mediaType == UwMediaPickerMediaType.IMAGE) {
 							try {
 								val compressedImageFile = imageCompressor.compress(File(selectedMedia.mediaPath))
 								selectedMediaList[index].mediaPath = compressedImageFile.absolutePath
@@ -398,12 +398,8 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 			if (hasErrorOccurred) {
 				this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_some_media_select_failed)
 			}
-			val imagesAndVideosPair = selectedMediaList.partition { it.mediaType == MediaType.IMAGE }
-			val imagesArray = imagesAndVideosPair.first.map { it.mediaPath }.toTypedArray()
-			val videosArray = imagesAndVideosPair.second.map { it.mediaPath }.toTypedArray()
 			val resultIntent = Intent()
-			resultIntent.putExtra(UwMediaPicker.UwMediaPickerImagesArrayKey, imagesArray)
-			resultIntent.putExtra(UwMediaPicker.UwMediaPickerVideosArrayKey, videosArray)
+			resultIntent.putExtra(Constants.UW_MEDIA_PICKER_RESULT_KEY, selectedMediaList)
 			setResult(Activity.RESULT_OK, resultIntent)
 			finish()
 		}

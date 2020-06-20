@@ -4,7 +4,7 @@ import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-internal data class SelectedMediaModel(
-		var mediaPath: String,
-		val mediaType: MediaType
+data class UwMediaPickerMediaModel(
+	var mediaPath: String,
+	val mediaType: UwMediaPickerMediaType
 ) : Parcelable
