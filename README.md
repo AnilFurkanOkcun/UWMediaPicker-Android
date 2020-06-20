@@ -43,7 +43,7 @@ Add the dependency to your app level build.gradle:
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.2.1'
+	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.2.2'
 }
 ```
 
@@ -66,7 +66,7 @@ dependencies {
 	.setCompressionMaxHeight(720F)				// Compressed image's max height px, default is 720
 	.setCompressFormat(Bitmap.CompressFormat.JPEG)		// Compressed image's format, default is JPEG
 	.setCompressionQuality(85)				// Image compression quality, default is 85
-	.setCompressedFileDestinationPath(destinationPath)	// Compressed image file's destination path, default is Pictures Dir
+	.setCompressedFileDestinationPath(destinationPath)	// Compressed image file's destination path, default is "${application.getExternalFilesDir(null).path}/Pictures"
  	.open()
 ```
 
