@@ -14,14 +14,14 @@ import com.anilokcun.uwmediapicker.model.GalleryImageModel
  */
 
 internal class GalleryImageVH(itemView: View) : BaseGalleryMediaVH(itemView) {
-
+	
 	private val imgThumbnail = itemView.findViewById<ImageView>(R.id.item_gallery_image_img_thumbnail)
 	private val imgSelected = itemView.findViewById<ImageView>(R.id.item_gallery_image_img_selected)
-
-	fun bind(item: GalleryImageModel, onMediaClickListener: OnRVItemClickListener, galleryMediaOnLongClickListener: GalleryMediaOnLongClickListener?) {
+	
+	fun bind(item: GalleryImageModel, galleryGridSize: Int, onMediaClickListener: OnRVItemClickListener, galleryMediaOnLongClickListener: GalleryMediaOnLongClickListener?) {
 		// Bind item click listener, thumbnail and selected icon in the base class
-		super.bind(item, onMediaClickListener, imgThumbnail, imgSelected)
-
+		super.bind(item, galleryGridSize, onMediaClickListener, imgThumbnail, imgSelected)
+		
 		// Item Long Click Event
 		itemView.setOnLongClickListener {
 			galleryMediaOnLongClickListener?.onLongClick(item.mediaPath)

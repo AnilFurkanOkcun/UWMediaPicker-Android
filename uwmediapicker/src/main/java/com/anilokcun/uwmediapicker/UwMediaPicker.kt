@@ -3,9 +3,9 @@ package com.anilokcun.uwmediapicker
 import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.anilokcun.uwmediapicker.helper.UwMediaPickerResultContract
 import com.anilokcun.uwmediapicker.model.UWMediaPickerSettingsModel
 import com.anilokcun.uwmediapicker.model.UwMediaPickerMediaModel
+import com.anilokcun.uwmediapicker.ui.activity.UwMediaPickerDialogFragment
 import java.lang.ref.WeakReference
 
 /**
@@ -122,22 +122,15 @@ class UwMediaPicker private constructor() {
 			compressionQuality,
 			compressedFileDestinationPathValue
 		)
-		val openMediaPicker = if (activityWeakReference != null) {
-			activityWeakReference!!.get()!!.registerForActivityResult(UwMediaPickerResultContract()) {
-				resultCallback.invoke(it)
-			}
-		} else {
-			fragmentWeakReference!!.get()!!.registerForActivityResult(UwMediaPickerResultContract()) {
-				resultCallback.invoke(it)
-			}
-		}
-		openMediaPicker.launch(uwMediaPickerSettings)
+		
+		val uwMediaPickerDialogFragment = UwMediaPickerDialogFragment.newInstance(uwMediaPickerSettings)
+		uwMediaPickerDialogFragment.setResultCallback(resultCallback)
+		uwMediaPickerDialogFragment.show(activityWeakReference?.get()?.supportFragmentManager!!, "UwMediaPicker")
 	}
 	
 	enum class GalleryMode { ImageGallery, VideoGallery, ImageAndVideoGallery }
 	
 	companion object {
-		
 		fun with(activity: AppCompatActivity) =
 			UwMediaPicker().apply { this.activityWeakReference = WeakReference(activity) }
 		

@@ -1,23 +1,20 @@
 package com.anilokcun.uwmediapicker.ui.activity
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
+import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
+import android.view.*
 import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +22,6 @@ import com.anilokcun.uwmediapicker.ImageCompressor
 import com.anilokcun.uwmediapicker.R
 import com.anilokcun.uwmediapicker.UwMediaPicker
 import com.anilokcun.uwmediapicker.adapter.GalleryMediaRvAdapter
-import com.anilokcun.uwmediapicker.constants.Constants
 import com.anilokcun.uwmediapicker.helper.logError
 import com.anilokcun.uwmediapicker.helper.toUri
 import com.anilokcun.uwmediapicker.helper.toastStringRes
@@ -47,13 +43,15 @@ import kotlin.coroutines.CoroutineContext
  * Create Date	:	30.08.2018
  */
 
-internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
+internal class UwMediaPickerDialogFragment : DialogFragment(), CoroutineScope {
 	
 	override val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
 	
 	private lateinit var job: Job
 	
-	private val galleryMediaProvider by lazy { GalleryMediaDataProvider(this) }
+	private val galleryMediaProvider by lazy { GalleryMediaDataProvider(requireContext()) }
+	
+	private var resultCallback: ((List<UwMediaPickerMediaModel>?) -> Unit)? = null
 	
 	private lateinit var settings: UWMediaPickerSettingsModel
 	private var toastMaxMediaCountError: Toast? = null
@@ -79,6 +77,9 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	private var lastOpenedBucketId: String? = null
 	private var isBucketOpened: Boolean = false
 	
+	private var galleryGridSize = 0
+	private var galleryTextSize = 10f
+	
 	// MediaBucket Click Listener
 	private val galleryMediaBucketClickListener: OnRVItemClickListener by lazy {
 		object : OnRVItemClickListener {
@@ -97,13 +98,37 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 		}
 	}
 	
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
+	override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+		val dialog = super.onCreateDialog(savedInstanceState)
+		// Add back button listener
+		dialog.setOnKeyListener { _, keyCode, keyEvent ->
+			// getAction to make sure this doesn't double fire
+			if (keyCode == KeyEvent.KEYCODE_BACK && keyEvent.action == KeyEvent.ACTION_UP) {
+				onBackPressed()
+				true // Capture onKey
+			} else false
+			// Don't capture
+		}
+		return dialog
+	}
+	
+	override fun onStart() {
+		super.onStart()
+		dialog?.window?.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+	}
+	
+	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+		return inflater.inflate(R.layout.activity_uw_media_picker, container, false)
+	}
+	
+	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+		super.onViewCreated(view, savedInstanceState)
 		job = Job()
-		setContentView(R.layout.activity_uw_media_picker)
 		initPage()
 		setListeners()
 	}
+	
+	override fun getTheme() = R.style.Theme_AppCompat_Light_NoActionBar
 	
 	/** Adds Listeners to UI elements */
 	private fun setListeners() {
@@ -120,22 +145,21 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	/** Does initial actions */
 	private fun initPage() {
 		// Get Settings
-		settings = intent?.extras?.getParcelable(Constants.UW_MEDIA_PICKER_SETTINGS_KEY)!!
+		settings = arguments?.getParcelable(KEY_SETTINGS)!!
 		// Set Status bar icon colors
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			dialog?.window?.statusBarColor = ContextCompat.getColor(requireContext(), R.color.colorUwMediaPickerStatusBar)
+		}
 		if (settings.lightStatusBar && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-			window.statusBarColor = getColor(R.color.colorUwMediaPickerStatusBar)
 			tvToolbarDone.systemUiVisibility =
-					tvToolbarDone.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-			
+				tvToolbarDone.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
 		}
 		// Get Device Width in Px
-		val displayMetrics = DisplayMetrics()
-		windowManager.defaultDisplay.getMetrics(displayMetrics)
-		val deviceWidth = displayMetrics.widthPixels
+		val deviceWidth = resources.displayMetrics.widthPixels
 		// Calculate gallery grid width (size)
-		GALLERY_GRID_SIZE = deviceWidth / settings.gridColumnCount
+		galleryGridSize = deviceWidth / settings.gridColumnCount
 		// Set gallery items' texts size according to gridColumnCount
-		GALLERY_TEXT_SIZE_SP = when (settings.gridColumnCount) {
+		galleryTextSize = when (settings.gridColumnCount) {
 			1 -> 19F
 			2 -> 14F
 			else -> (14 - settings.gridColumnCount).toFloat()
@@ -144,12 +168,11 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 		updateToolbarTitle()
 		
 		// Set RecyclerView
-		recyclerView.layoutManager =
-				GridLayoutManager(applicationContext, settings.gridColumnCount)
+		recyclerView.layoutManager = GridLayoutManager(requireContext(), settings.gridColumnCount)
 		recyclerView.itemAnimator = DefaultItemAnimator()
 		recyclerView.addItemDecoration(GalleryItemDecoration(
-				resources.getDimensionPixelSize(R.dimen.uwmediapicker_gallery_spacing),
-				settings.gridColumnCount
+			resources.getDimensionPixelSize(R.dimen.uwmediapicker_gallery_spacing),
+			settings.gridColumnCount
 		))
 		
 		// Get Data for RecyclerView
@@ -172,7 +195,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 				}
 				mediaBucketsList.addAll(buckets)
 				// This is UI/Main thread
-				recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryMediaBucketClickListener)
+				recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryGridSize, galleryTextSize, galleryMediaBucketClickListener)
 			} catch (e: Exception) {
 				Snackbar
 						.make(
@@ -193,11 +216,10 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	/** Sets Media Buckets(Albums) Recycler View */
 	private fun setupMediaBucketRecyclerView() {
 		// Setup recyclerView with mediaList, GalleryMediaClickListener and OnLongClickListener
-		recyclerView.adapter = GalleryMediaRvAdapter(mediaList, galleryMediaClickListener, object : GalleryMediaOnLongClickListener {
+		recyclerView.adapter = GalleryMediaRvAdapter(mediaList, galleryGridSize, galleryTextSize, galleryMediaClickListener, object : GalleryMediaOnLongClickListener {
 			// Open ImagePreviewDialog when long clicked to image
 			override fun onLongClick(imagePath: String?) {
-				imagePreviewDialog
-						.showPreview(supportFragmentManager, imagePath?.toUri())
+				imagePreviewDialog.showPreview(parentFragmentManager, imagePath?.toUri())
 			}
 		})
 		// Add OnItemTouchListener to RecyclerView
@@ -218,7 +240,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	/** Gallery Media Bucket's click function */
 	private fun onGalleryMediaBucketClick(position: Int) {
 		if (mediaBucketsList[position].id == null) {
-			this.toastStringRes(R.string.uwmediapicker_toast_error_media_bucket_open_failed)
+			requireContext().toastStringRes(R.string.uwmediapicker_toast_error_media_bucket_open_failed)
 			return
 		}
 		// Set isBucketOpened True
@@ -257,7 +279,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 				} catch (e: Exception) {
 					// If error occurred, do not save this bucket as a lastOpenedBucket and go back
 					e.toString().logError()
-					this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_media_bucket_open_failed)
+					requireContext().toastStringRes(R.string.uwmediapicker_toast_error_media_bucket_open_failed)
 					lastOpenedBucketName = ""
 					lastOpenedBucketId = ""
 					onBackPressed()
@@ -279,7 +301,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	/** Gallery Media's click function */
 	private fun onGalleryMediaClick(position: Int) {
 		if (mediaList[position].mediaPath == null) {
-			this.toastStringRes(R.string.uwmediapicker_toast_error_media_select_failed)
+			requireContext().toastStringRes(R.string.uwmediapicker_toast_error_media_select_failed)
 			return
 		}
 		// If media already selected;
@@ -295,7 +317,7 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 			if (settings.maxSelectableMediaCount != null && selectedMediaList.size == settings.maxSelectableMediaCount) {
 				toastMaxMediaCountError?.cancel()
 				// Show error toast about max selectable media count
-				toastMaxMediaCountError = this.toastStringRes(R.string.uwmediapicker_toast_error_max_media_selected)
+				toastMaxMediaCountError = requireContext().toastStringRes(R.string.uwmediapicker_toast_error_max_media_selected)
 				// Animate(Blink) MediaSelectCount Text
 				tvToolbarMediaSelectCount.startAnimation(blinkAnimation)
 				return
@@ -348,22 +370,21 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 	/** Opens simple progress dialog */
 	private fun getProgressDialog(): AlertDialog {
 		// Inflates the dialog with custom view
-		val dialogView = LayoutInflater.from(this).inflate(R.layout.uwmediapicker_dialog_progress, null)
+		val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.uwmediapicker_dialog_progress, null)
 		
-		return AlertDialog.Builder(this)
-				.setView(dialogView)
-				.setCancelable(false)
-				.create().apply {
-					window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-				}
+		return AlertDialog.Builder(requireContext())
+			.setView(dialogView)
+			.setCancelable(false)
+			.create().apply {
+				window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+			}
 	}
 	
 	/** Returns selected image paths as result */
 	private fun returnResult() {
 		if (selectedMediaList.isEmpty()) {
-			this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_media_select_failed)
-			setResult(Activity.RESULT_CANCELED, Intent())
-			finish()
+			requireContext().toastStringRes(R.string.uwmediapicker_toast_error_media_select_failed)
+			dismiss()
 			return
 		}
 		launch {
@@ -396,16 +417,14 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 			progressDialog.dismiss()
 			// If an error has occurred and some media can still be selected; show toast message about it
 			if (hasErrorOccurred) {
-				this@UwMediaPickerActivity.toastStringRes(R.string.uwmediapicker_toast_error_some_media_select_failed)
+				requireContext().toastStringRes(R.string.uwmediapicker_toast_error_some_media_select_failed)
 			}
-			val resultIntent = Intent()
-			resultIntent.putExtra(Constants.UW_MEDIA_PICKER_RESULT_KEY, selectedMediaList)
-			setResult(Activity.RESULT_OK, resultIntent)
-			finish()
+			resultCallback?.invoke(selectedMediaList)
+			dismiss()
 		}
 	}
 	
-	override fun onBackPressed() {
+	private fun onBackPressed() {
 		// If any bucked opened; close it
 		if (isBucketOpened) {
 			// Hide progress screen
@@ -413,13 +432,13 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 			// Cancel the open media bucket task
 			if (taskOpenMediaBucket != null) taskOpenMediaBucket?.cancel()
 			// Set RecyclerView with MediaBucketList
-			recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryMediaBucketClickListener)
+			recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryGridSize, galleryTextSize, galleryMediaBucketClickListener)
 			// Set isBucketOpened false
 			isBucketOpened = false
 			// Update ToolbarTitle
 			updateToolbarTitle()
 		} else {
-			super.onBackPressed()
+			dismiss()
 		}
 	}
 	
@@ -428,10 +447,21 @@ internal class UwMediaPickerActivity : AppCompatActivity(), CoroutineScope {
 		super.onDestroy()
 	}
 	
+	fun setResultCallback(resultCallback: (List<UwMediaPickerMediaModel>?) -> Unit) {
+		this.resultCallback = resultCallback
+	}
+	
 	companion object {
+		private const val KEY_SETTINGS = "KEY_SETTINGS"
 		
-		var GALLERY_GRID_SIZE = 0
-		var GALLERY_TEXT_SIZE_SP = 10F
+		fun newInstance(settings: UWMediaPickerSettingsModel): UwMediaPickerDialogFragment {
+			return UwMediaPickerDialogFragment().apply {
+				arguments = Bundle().apply {
+					putParcelable(KEY_SETTINGS, settings)
+				}
+			}
+		}
+		
 		
 		init {
 			// For using vector drawables on lower APIs

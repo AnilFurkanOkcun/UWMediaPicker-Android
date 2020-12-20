@@ -7,7 +7,6 @@ import android.widget.TextView
 import com.anilokcun.uwmediapicker.R
 import com.anilokcun.uwmediapicker.listener.OnRVItemClickListener
 import com.anilokcun.uwmediapicker.model.GalleryVideoModel
-import com.anilokcun.uwmediapicker.ui.activity.UwMediaPickerActivity
 import java.text.DecimalFormat
 import java.util.concurrent.TimeUnit
 import kotlin.math.log10
@@ -20,22 +19,22 @@ import kotlin.math.pow
  */
 
 internal class GalleryVideoVH(itemView: View) : BaseGalleryMediaVH(itemView) {
-
+	
 	private val imgThumbnail = itemView.findViewById<ImageView>(R.id.item_gallery_video_img_thumbnail)
 	private val imgSelected = itemView.findViewById<ImageView>(R.id.item_gallery_video_img_selected)
 	private val tvVideoDuration = itemView.findViewById<TextView>(R.id.item_gallery_video_tv_video_duration)
 	private val tvVideoSize = itemView.findViewById<TextView>(R.id.item_gallery_video_tv_video_size)
-
-	fun bind(item: GalleryVideoModel, onMediaClickListener: OnRVItemClickListener) {
+	
+	fun bind(item: GalleryVideoModel, galleryGridSize: Int, galleryTextSize: Float, onMediaClickListener: OnRVItemClickListener) {
 		// Bind item click listener, thumbnail and selected icon in the base class
-		super.bind(item, onMediaClickListener, imgThumbnail, imgSelected)
-
+		super.bind(item, galleryGridSize, onMediaClickListener, imgThumbnail, imgSelected)
+		
 		// Video Duration
 		val videoDurationMillisecond = item.videoDuration
 		val videoDurationSecond = TimeUnit.MILLISECONDS.toSeconds(videoDurationMillisecond) % 60
 		val videoDurationMinute = TimeUnit.MILLISECONDS.toMinutes(videoDurationMillisecond) % 60
 		val videoDurationHour = TimeUnit.MILLISECONDS.toHours(videoDurationMillisecond)
-		tvVideoDuration.textSize = UwMediaPickerActivity.GALLERY_TEXT_SIZE_SP
+		tvVideoDuration.textSize = galleryTextSize
 		tvVideoDuration.text = if (videoDurationHour > 0) {
 			itemView.context
 				.getString(R.string.uwmediapicker_time_format_hour_min_sec,
@@ -45,9 +44,9 @@ internal class GalleryVideoVH(itemView: View) : BaseGalleryMediaVH(itemView) {
 				.getString(R.string.uwmediapicker_time_format_min_sec,
 					videoDurationMinute, videoDurationSecond)
 		}
-
+		
 		// Video Size
-		tvVideoSize.textSize = UwMediaPickerActivity.GALLERY_TEXT_SIZE_SP
+		tvVideoSize.textSize = galleryTextSize
 		tvVideoSize.text = if (item.videoSize != null) {
 			if (item.videoSize == "0") {
 				"0"

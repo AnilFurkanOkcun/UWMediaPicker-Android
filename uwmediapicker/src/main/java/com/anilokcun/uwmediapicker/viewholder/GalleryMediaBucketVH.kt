@@ -10,7 +10,6 @@ import com.anilokcun.uwmediapicker.R
 import com.anilokcun.uwmediapicker.helper.toUri
 import com.anilokcun.uwmediapicker.listener.OnRVItemClickListener
 import com.anilokcun.uwmediapicker.model.GalleryMediaBucketModel
-import com.anilokcun.uwmediapicker.ui.activity.UwMediaPickerActivity
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -21,36 +20,36 @@ import com.bumptech.glide.request.RequestOptions
  */
 
 internal class GalleryMediaBucketVH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
+	
 	private val imgThumbnail = itemView.findViewById<ImageView>(R.id.item_gallery_media_bucket_img_thumbnail)
 	private val tvName = itemView.findViewById<TextView>(R.id.item_gallery_media_bucket_tv_name)
 	private val tvMediaCount = itemView.findViewById<TextView>(R.id.item_gallery_media_bucket_tv_media_count)
-
-	fun bind(item: GalleryMediaBucketModel, onMediaBucketClickListener: OnRVItemClickListener) {
+	
+	fun bind(item: GalleryMediaBucketModel, galleryGridSize: Int, galleryTextSize: Float, onMediaBucketClickListener: OnRVItemClickListener) {
 		// Thumbnail
-		imgThumbnail.layoutParams.height = UwMediaPickerActivity.GALLERY_GRID_SIZE
-		imgThumbnail.layoutParams.width = UwMediaPickerActivity.GALLERY_GRID_SIZE
-
+		imgThumbnail.layoutParams.height = galleryGridSize
+		imgThumbnail.layoutParams.width = galleryGridSize
+		
 		Glide.with(itemView).apply {
 			this.load(item.coverImagePath?.toUri())
 				.apply(RequestOptions
-					.overrideOf(UwMediaPickerActivity.GALLERY_GRID_SIZE, UwMediaPickerActivity.GALLERY_GRID_SIZE)
+					.overrideOf(galleryGridSize, galleryGridSize)
 					.centerCrop()
 					.placeholder(ColorDrawable(ContextCompat.getColor(itemView.context, R.color.colorUwMediaPickerImagePlaceHolder))))
 				.into(imgThumbnail)
 		}
-
+		
 		// Name
 		tvName.text = item.name
-		tvName.textSize = UwMediaPickerActivity.GALLERY_TEXT_SIZE_SP
+		tvName.textSize = galleryTextSize
 		// Media Count
 		tvMediaCount.text = item.mediaCount.toString()
-		tvMediaCount.textSize = UwMediaPickerActivity.GALLERY_TEXT_SIZE_SP
-
+		tvMediaCount.textSize = galleryTextSize
+		
 		// Item Click Event
 		itemView.setOnClickListener {
 			onMediaBucketClickListener.onClick(adapterPosition)
 		}
-
+		
 	}
 }

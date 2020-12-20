@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/UWMediaPicker-Android.iml" filepath="$PROJECT_DIR$/UWMediaPicker-Android.iml" />
-      <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
-      <module fileurl="file://$PROJECT_DIR$/uwmediapicker/uwmediapicker.iml" filepath="$PROJECT_DIR$/uwmediapicker/uwmediapicker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/UWMediaPicker-Android.iml" filepath="$PROJECT_DIR$/.idea/UWMediaPicker-Android.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample/UWMediaPicker-Android.sample.iml" filepath="$PROJECT_DIR$/.idea/modules/sample/UWMediaPicker-Android.sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/uwmediapicker/UWMediaPicker-Android.uwmediapicker.iml" filepath="$PROJECT_DIR$/.idea/modules/uwmediapicker/UWMediaPicker-Android.uwmediapicker.iml" />
     </modules>
   </component>
 </project>
