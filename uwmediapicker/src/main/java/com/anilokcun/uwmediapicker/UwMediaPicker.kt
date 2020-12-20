@@ -125,7 +125,12 @@ class UwMediaPicker private constructor() {
 		
 		val uwMediaPickerDialogFragment = UwMediaPickerDialogFragment.newInstance(uwMediaPickerSettings)
 		uwMediaPickerDialogFragment.setResultCallback(resultCallback)
-		uwMediaPickerDialogFragment.show(activityWeakReference?.get()?.supportFragmentManager!!, "UwMediaPicker")
+		val fragmentManager = if (activityWeakReference != null) {
+			activityWeakReference!!.get()!!.supportFragmentManager
+		} else {
+			fragmentWeakReference!!.get()!!.parentFragmentManager
+		}
+		uwMediaPickerDialogFragment.show(fragmentManager, "UwMediaPicker")
 	}
 	
 	enum class GalleryMode { ImageGallery, VideoGallery, ImageAndVideoGallery }
