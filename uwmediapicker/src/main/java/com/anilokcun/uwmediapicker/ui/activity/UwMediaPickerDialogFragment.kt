@@ -35,7 +35,6 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_uw_media_picker.*
 import kotlinx.coroutines.*
 import java.io.File
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Author     	:	Anıl Furkan Ökçün
@@ -43,12 +42,11 @@ import kotlin.coroutines.CoroutineContext
  * Create Date	:	30.08.2018
  */
 
-internal class UwMediaPickerDialogFragment : DialogFragment(), CoroutineScope {
-	
-	override val coroutineContext: CoroutineContext get() = Dispatchers.Main + job
-	
-	private lateinit var job: Job
-	
+internal class UwMediaPickerDialogFragment : DialogFragment() {
+
+    private var job = Job()
+    private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
+
 	private val galleryMediaProvider by lazy { GalleryMediaDataProvider(requireContext()) }
 	
 	private var resultCallback: ((List<UwMediaPickerMediaModel>?) -> Unit)? = null
@@ -123,7 +121,6 @@ internal class UwMediaPickerDialogFragment : DialogFragment(), CoroutineScope {
 	
 	override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 		super.onViewCreated(view, savedInstanceState)
-		job = Job()
 		initPage()
 		setListeners()
 	}
@@ -178,7 +175,7 @@ internal class UwMediaPickerDialogFragment : DialogFragment(), CoroutineScope {
 		// Get Data for RecyclerView
 		// Async task started, show progress screen
 		lytProgressBar.visibility = View.VISIBLE
-		launch {
+		coroutineScope.launch {
 			try {
 				val buckets = withContext(Dispatchers.IO) {
 					when (settings.galleryMode) {
@@ -195,7 +192,10 @@ internal class UwMediaPickerDialogFragment : DialogFragment(), CoroutineScope {
 				}
 				mediaBucketsList.addAll(buckets)
 				// This is UI/Main thread
-				recyclerView.adapter = GalleryMediaRvAdapter(mediaBucketsList, galleryGridSize, galleryTextSize, galleryMediaBucketClickListener)
+				recyclerView.adapter =
+					GalleryMediaRvAdapter(mediaBucketsList, galleryGridSize, galleryTextSize, galleryMediaBucketClickListener)
+			} catch (e: CancellationException) {
+				throw e
 			} catch (e: Exception) {
 				Snackbar
 						.make(
@@ -208,7 +208,7 @@ internal class UwMediaPickerDialogFragment : DialogFragment(), CoroutineScope {
 						}.show()
 			} finally {
 				// Hide progress screen
-				lytProgressBar.visibility = View.GONE
+				lytProgressBar?.visibility = View.GONE
 			}
 		}
 	}
@@ -255,7 +255,7 @@ internal class UwMediaPickerDialogFragment : DialogFragment(), CoroutineScope {
 			mediaList.clear()
 			// Async task started, show progress screen
 			lytProgressBar.visibility = View.VISIBLE
-			launch {
+			coroutineScope.launch {
 				try {
 					taskOpenMediaBucket = async(Dispatchers.IO) {
 						val selectedMediaPaths = selectedMediaList.map { it.mediaPath }
@@ -387,7 +387,7 @@ internal class UwMediaPickerDialogFragment : DialogFragment(), CoroutineScope {
 			dismiss()
 			return
 		}
-		launch {
+		coroutineScope.launch {
 			val progressDialog = getProgressDialog().apply { show() }
 			var hasErrorOccurred = false
 			
