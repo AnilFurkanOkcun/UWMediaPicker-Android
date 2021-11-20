@@ -26,7 +26,7 @@ Easy to use and customizable media picker library to pick multiple images(with c
 ## Installation
 *You can have a look at the [sample project.](https://github.com/AnilFurkanOkcun/UWMediaPicker-Android/tree/master/sample)*
 
-**1. Include library**
+**Include library**
 
 Add it in your root build.gradle at the end of repositories:
 
@@ -44,13 +44,12 @@ Add the dependency to your app level build.gradle:
 ```gradle
 dependencies {
 	...
-	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.3.2'
+	implementation 'com.github.AnilFurkanOkcun:UWMediaPicker-Android:1.3.3'
 }
 ```
 
 ## Usage
 *Make sure you have `READ_EXTERNAL_STORAGE` permission.*\
-*In addition, if you use compression make sure you have `WRITE_EXTERNAL_STORAGE` permission too.*\
 *On Android Q, you should add `android:requestLegacyExternalStorage="true"` into your application tag in manifest*
 
 **Initializing UW Media Picker**

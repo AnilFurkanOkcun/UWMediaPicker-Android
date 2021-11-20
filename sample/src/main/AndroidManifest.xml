@@ -4,7 +4,6 @@
     package="com.anilokcun.uwandroidmediapicker">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -18,7 +17,8 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity">
+            tools:ignore="LockedOrientationActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
