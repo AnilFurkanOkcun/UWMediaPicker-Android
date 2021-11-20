@@ -48,9 +48,10 @@ internal class UwMediaPickerDialogFragment : DialogFragment() {
     private val coroutineScope = CoroutineScope(Dispatchers.Main + job)
 
 	private val galleryMediaProvider by lazy { GalleryMediaDataProvider(requireContext()) }
-	
+
 	private var resultCallback: ((List<UwMediaPickerMediaModel>?) -> Unit)? = null
-	
+	private var cancelCallback: (() -> Unit)? = null
+
 	private lateinit var settings: UWMediaPickerSettingsModel
 	private var toastMaxMediaCountError: Toast? = null
 	
@@ -438,6 +439,7 @@ internal class UwMediaPickerDialogFragment : DialogFragment() {
 			// Update ToolbarTitle
 			updateToolbarTitle()
 		} else {
+			cancelCallback?.invoke()
 			dismiss()
 		}
 	}
@@ -449,6 +451,10 @@ internal class UwMediaPickerDialogFragment : DialogFragment() {
 	
 	fun setResultCallback(resultCallback: (List<UwMediaPickerMediaModel>?) -> Unit) {
 		this.resultCallback = resultCallback
+	}
+
+	fun setCancelCallback(cancelCallback: () -> Unit) {
+		this.cancelCallback = cancelCallback
 	}
 	
 	companion object {

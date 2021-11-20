@@ -30,7 +30,8 @@ class UwMediaPicker private constructor() {
 	private var compressFormat: Bitmap.CompressFormat = Bitmap.CompressFormat.JPEG
 	private var compressionQuality = 85
 	private var compressedFileDestinationPath: String? = null
-	
+	private var cancelCallback: (() -> Unit)? = null
+
 	fun setGalleryMode(galleryMode: GalleryMode): UwMediaPicker {
 		this.galleryMode = galleryMode
 		return this
@@ -98,6 +99,11 @@ class UwMediaPicker private constructor() {
 		this.compressedFileDestinationPath = destinationDirectoryPath
 		return this
 	}
+
+	fun setCancelCallback(cancelCallback: (() -> Unit)): UwMediaPicker {
+		this.cancelCallback = cancelCallback
+		return this
+	}
 	
 	fun launch(resultCallback: (List<UwMediaPickerMediaModel>?) -> Unit) {
 		val compressedFileDestinationPathValue = if (compressedFileDestinationPath == null) {
@@ -125,6 +131,7 @@ class UwMediaPicker private constructor() {
 		
 		val uwMediaPickerDialogFragment = UwMediaPickerDialogFragment.newInstance(uwMediaPickerSettings)
 		uwMediaPickerDialogFragment.setResultCallback(resultCallback)
+		cancelCallback?.let(uwMediaPickerDialogFragment::setCancelCallback)
 		val fragmentManager = if (activityWeakReference != null) {
 			activityWeakReference!!.get()!!.supportFragmentManager
 		} else {

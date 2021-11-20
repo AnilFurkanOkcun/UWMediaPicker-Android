@@ -67,6 +67,7 @@ dependencies {
 	.setCompressFormat(Bitmap.CompressFormat.JPEG)		// Compressed image's format, default is JPEG
 	.setCompressionQuality(85)				// Image compression quality, default is 85
 	.setCompressedFileDestinationPath(destinationPath)	// Compressed image file's destination path, default is "${application.getExternalFilesDir(null).path}/Pictures"
+	.setCancelCallback{ }					// Will be called when user cancels media selection
  	.launch{selectedMediaList-> } // (::onMediaSelected)	// Will be called when media is selected
 ```
 

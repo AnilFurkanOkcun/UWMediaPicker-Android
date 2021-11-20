@@ -128,6 +128,7 @@ class MainActivity : AppCompatActivity() {
 			.setCompressFormat(Bitmap.CompressFormat.JPEG)
 			.setCompressionQuality(quality)
 			.setCompressedFileDestinationPath("${application.getExternalFilesDir(null)!!.path}/Pictures")
+			.setCancelCallback(::onMediaSelectionCancelled)
 			.launch(::onMediaSelected)
 		
 	}
@@ -141,6 +142,10 @@ class MainActivity : AppCompatActivity() {
 		} else {
 			Toast.makeText(this, "Unexpected Error", Toast.LENGTH_SHORT).show()
 		}
+	}
+
+	private fun onMediaSelectionCancelled(){
+		Toast.makeText(this, "Media Selection Cancelled ", Toast.LENGTH_SHORT).show()
 	}
 	
 	/** Request to open Image Picker Intent and Handle the permissions */

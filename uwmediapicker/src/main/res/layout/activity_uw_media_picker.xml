@@ -60,6 +60,7 @@
             android:paddingEnd="@dimen/uwmediapicker_spacing_normal"
             android:paddingStart="@dimen/uwmediapicker_spacing_normal"
             android:text="@string/uwmediapicker_toolbar_done"
+			android:enabled="false"
 	        android:textColor="@color/uwmediapicker_color_btn_text_done"
             android:textSize="@dimen/uwmediapicker_text_size_toolbar_title"
             app:layout_constraintBottom_toBottomOf="parent"
